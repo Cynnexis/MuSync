@@ -32,12 +32,16 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     oauth/webapi.cpp \
-    models/track.cpp
+    models/track.cpp \
+    threading/barrierdata.cpp \
+    threading/barrier.cpp
 
 HEADERS += \
         mainwindow.h \
     oauth/webapi.h \
-    models/track.h
+    models/track.h \
+    threading/barrierdata.h \
+    threading/barrier.h
 
 FORMS += \
         mainwindow.ui
@@ -54,7 +58,9 @@ DISTFILES += \
     res/texts/.gitignore \
     res/texts/spotify-client-id.txt \
     res/texts/spotify-client-secret.txt \
-    lib/.gitignore
+    lib/.gitignore \
+    res/texts/genius-client-id.txt \
+    res/texts/genius-client-secret.txt
 
 RESOURCES += \
     musync.qrc
