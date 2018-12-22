@@ -34,6 +34,7 @@ public:
 	
 	void connectToGenius();
 	void getLyrics(const Track& track);
+	void getLyrics();
 	
 signals:
 	void spotifyLinkedChanged(bool);

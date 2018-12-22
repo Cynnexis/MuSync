@@ -74,6 +74,10 @@ void WebAPI::getLyrics(const Track& track) {
 	requestGeniusSongInfoId = requestor->get(request);
 }
 
+void WebAPI::getLyrics() {
+	getPlayingTrack();
+}
+
 /* PRIVATE SLOTS */
 
 void WebAPI::onSpotifyLinkedChanged() {
@@ -232,8 +236,9 @@ void WebAPI::onRequestFinished(int code, QNetworkReply::NetworkError error, QByt
 				//QTextDocument text;
 				//text.setHtml(html);
 				//html = text.toPlainText();
+				lyrics = html;
 				
-				cout << "Lyrics> " << html.toStdString() << endl;
+				cout << "Lyrics> " << lyrics.toStdString() << endl;
 				emit geniusLyricsFetched(lyrics);
 			}
 			// If no path found, return no lyrics

@@ -22,7 +22,8 @@ public:
 	~MainWindow();
 	
 private slots:
-	void on_pb_playingTrack_clicked();
+	void getTrack(Track track);
+	void getLyrics(QString lyrics);
 	
 private:
 	Ui::MainWindow *ui;
