@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/text">
+        <file alias="spotify-client-id">res/texts/spotify-client-id.txt</file>
+        <file alias="spotify-client-secret">res/texts/spotify-client-secret.txt</file>
+    </qresource>
+</RCC>
