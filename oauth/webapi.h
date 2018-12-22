@@ -8,9 +8,15 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QDesktopServices>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonValue>
+#include <QJsonArray>
 
 #include "lib/O2/o2.h"
 #include "lib/O2/o2requestor.h"
+
+#include "models/track.h"
 
 using namespace std;
 
@@ -25,11 +31,12 @@ public:
 	void getPlayingTrack();
 	
 signals:
-	void linkedChanged(bool);
-	void linkingSucceeded();
-	void linkingFailed();
-	void openBrowser(QUrl);
-	void closeBrowser();
+	void spotifyLinkedChanged(bool);
+	void spotifyLinkingSucceeded();
+	void spotifyLinkingFailed();
+	void spotifyOpenBrowser(QUrl);
+	void spotifyCloseBrowser();
+	void spotifyPlayingTrackFetched(Track);
 	
 private slots:
 	void onSpotifyLinkedChanged();

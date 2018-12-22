@@ -31,11 +31,13 @@ CONFIG += c++11
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    oauth/webapi.cpp
+    oauth/webapi.cpp \
+    models/track.cpp
 
 HEADERS += \
         mainwindow.h \
-    oauth/webapi.h
+    oauth/webapi.h \
+    models/track.h
 
 FORMS += \
         mainwindow.ui
@@ -57,9 +59,7 @@ DISTFILES += \
 RESOURCES += \
     musync.qrc
 
-win32:CONFIG(release, debug|release): LIBS += -L"C:/Program Files/OpenSSL-Win64/lib/VC" -lssl-1_1 -llibcrypto
-else:win32:CONFIG(debug, debug|release): LIBS += -L"C:/Program Files/OpenSSL-Win64/lib/VC" -lssl-1_1d -llibcryptod
-else:unix: LIBS += -L"C:/Program Files/OpenSSL-Win64/lib/VC" -lssl-1_1 -llibcrypto
-
 INCLUDEPATH += "C:/Program Files/OpenSSL-Win64/include"
 DEPENDPATH += "C:/Program Files/OpenSSL-Win64/include"
+
+win32: LIBS += -L"$$PWD/lib/SSL/" -lopenssl -llibeay32 -llibssl -llibcrypto
