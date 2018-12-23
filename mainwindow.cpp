@@ -12,9 +12,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	api = new WebAPI(this);
 	
 	timer = new QTimer(this);
-	timer->setInterval(2000);
+	timer->setSingleShot(true);
 	connect(timer, SIGNAL(timeout()), this, SLOT(refresh()));
-	timer->start(5000);
+	timer->start(refreshTimeout + 1000);
 	
 	connect(api, SIGNAL(spotifyPlayingTrackFetched(Track)), this, SLOT(getTrack(Track)));
 	connect(api, SIGNAL(geniusLyricsFetched(QString)), this, SLOT(getLyrics(QString)));
@@ -62,7 +62,9 @@ void MainWindow::onTrackThumbnailChanged(QPixmap thumbnail) {
 
 void MainWindow::refresh() {
 	cout << "MainWindow> Refreshing..." << endl;
+	timer->stop();
 	api->getLyrics();
+	timer->start(refreshTimeout);
 }
 
 void MainWindow::on_actionRefresh_triggered() {

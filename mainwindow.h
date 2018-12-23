@@ -44,6 +44,8 @@ private:
 	WebAPI* api;
 	Track currentTrack;
 	QTimer* timer;
+	
+	int refreshTimeout = 5000;
 };
 
 #endif // MAINWINDOW_H
