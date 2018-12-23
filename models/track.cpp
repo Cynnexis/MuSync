@@ -1,17 +1,36 @@
 #include "track.h"
 
-Track::Track(const QString& name, const QStringList& artists, const QString& albumName, QObject *parent) : QObject(parent) {
-	init(name, artists, albumName);
+Track::Track(const QString& name, const QStringList& artists, const QString& albumName, const QPixmap thumbnail, QObject *parent) : QObject(parent) {
+	init(name, artists, albumName, thumbnail);
+}
+
+Track::Track(const QString& name, const QStringList& artists, const QString& albumName, const QString thumbnailUrl, QObject* parent) : QObject(parent) {
+	if (thumbnailUrl == "")
+		init(name, artists, albumName, QPixmap());
+	// Download image
+	else {
+		QNetworkRequest request = QNetworkRequest(QUrl(thumbnailUrl));
+		QNetworkAccessManager* mgr = new QNetworkAccessManager(this);
+		QNetworkReply* response = mgr->get(request);
+		QEventLoop event;
+		connect(response, SIGNAL(finished()), &event, SLOT(quit()));	
+		event.exec();
+		
+		QPixmap thumbnail;
+		thumbnail.loadFromData(response->readAll());
+		init(name, artists, albumName, thumbnail);
+	}
 }
 
 Track::Track(const Track& track, QObject *parent) : QObject(parent) {
-	init(track.getName(), track.getArtists(), track.getAlbumName());
+	init(track.getName(), track.getArtists(), track.getAlbumName(), track.getThumbnail());
 }
 
-void Track::init(const QString& name, const QStringList& artists, const QString& albumName){
+void Track::init(const QString& name, const QStringList& artists, const QString& albumName, const QPixmap thumbnail){
 	setName(name);
 	setArtists(artists);
 	setAlbumName(albumName);
+	setThumbnail(thumbnail);
 }
 
 /* GETTERS & SETTERS */
@@ -40,11 +59,19 @@ void Track::setAlbumName(const QString& value) {
 	albumName = value;
 }
 
+QPixmap Track::getThumbnail() const {
+	return thumbnail;
+}
+
+void Track::setThumbnail(const QPixmap& value) {
+	thumbnail = value;
+}
+
 QString Track::toString() const {
 	return "Track{"
 		   "name='" + getName() + "', "
 		   "artists='" + getArtists().join(", ") + "', "
-		   "albumName='" + getAlbumName() + "', "
+		   "albumName='" + getAlbumName() + "'"
 		   "}";
 }
 

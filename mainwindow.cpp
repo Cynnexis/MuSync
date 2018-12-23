@@ -20,6 +20,11 @@ void MainWindow::getTrack(Track track) {
 	ui->lb_title->setText(track.getName());
 	ui->lb_artists->setText(track.getArtists().join(", "));
 	ui->lb_album->setText(track.getAlbumName());
+	
+	ui->lb_thumbnail->setPixmap(track.getThumbnail()
+								.scaled(ui->lb_thumbnail->width(),
+										ui->lb_thumbnail->height(),
+										Qt::KeepAspectRatio));
 }
 
 void MainWindow::getLyrics(QString lyrics) {

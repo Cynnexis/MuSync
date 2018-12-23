@@ -63,6 +63,9 @@ void WebAPI::connectToGenius() {
 }
 
 void WebAPI::getLyrics(const Track& track) {
+	if (track.getName() == "" || track.getArtists().isEmpty())
+		return;
+	
 	cout << "Genius> Fetching lyrics for " << track.getName().toStdString() << endl;
 	if (!o2_genius->linked())
 		throw "Not connected to the Genius API.";
@@ -131,6 +134,8 @@ void WebAPI::onRequestFinished(int code, QNetworkReply::NetworkError error, QByt
 		throw "Error while fetching data from API.";
 	
 	if (code == requestSpotifyPlayingTrackId) {
+		cout << "Spotify> " << QString(data).toStdString() << endl;
+		
 		if (QString(data) == "") {
 			emit spotifyPlayingTrackFetched(Track());
 			return;
@@ -143,6 +148,7 @@ void WebAPI::onRequestFinished(int code, QNetworkReply::NetworkError error, QByt
 			json = json["item"].toObject();
 		
 		QString name = json["name"].toString("");
+		
 		QJsonArray jsonArtists = json["artists"].toArray();
 		QStringList artists;
 		for (QJsonValue jsonArtist : jsonArtists)
@@ -152,7 +158,13 @@ void WebAPI::onRequestFinished(int code, QNetworkReply::NetworkError error, QByt
 		
 		QString albumName = json["album"].toObject()["name"].toString("");
 		
-		Track track = Track(name, artists, albumName, this);
+		QJsonArray thumbnails = json["album"].toObject()["images"].toArray();
+		QString thumbnailUrl = "";
+		
+		if (thumbnails.size() > 0)
+			thumbnailUrl = thumbnails[0].toObject()["url"].toString(thumbnailUrl);
+		
+		Track track = Track(name, artists, albumName, thumbnailUrl, this);
 		
 		cout << "Spotify> " << track.toString().toStdString() << endl;
 		
@@ -238,7 +250,7 @@ void WebAPI::onRequestFinished(int code, QNetworkReply::NetworkError error, QByt
 				//html = text.toPlainText();
 				lyrics = html;
 				
-				cout << "Lyrics> " << lyrics.toStdString() << endl;
+				//cout << "Lyrics> " << lyrics.toStdString() << endl;
 				emit geniusLyricsFetched(lyrics);
 			}
 			// If no path found, return no lyrics
