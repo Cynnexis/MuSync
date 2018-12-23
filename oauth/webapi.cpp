@@ -164,7 +164,7 @@ void WebAPI::onRequestFinished(int code, QNetworkReply::NetworkError error, QByt
 		if (thumbnails.size() > 0)
 			thumbnailUrl = thumbnails[0].toObject()["url"].toString(thumbnailUrl);
 		
-		Track track = Track(name, artists, albumName, thumbnailUrl, this);
+		Track track = Track(name, artists, albumName, thumbnailUrl, false, this);
 		
 		cout << "Spotify> " << track.toString().toStdString() << endl;
 		
