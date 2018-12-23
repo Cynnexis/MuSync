@@ -6,7 +6,15 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui(new Ui::MainWindow) {
 	ui->setupUi(this);
 	
+	// Change the the name of "File" menu to the application name
+	ui->menuFile->setTitle(qApp->applicationName());
+	
 	api = new WebAPI(this);
+	
+	timer = new QTimer(this);
+	timer->setInterval(2000);
+	connect(timer, SIGNAL(timeout()), this, SLOT(refresh()));
+	timer->start(5000);
 	
 	connect(api, SIGNAL(spotifyPlayingTrackFetched(Track)), this, SLOT(getTrack(Track)));
 	connect(api, SIGNAL(geniusLyricsFetched(QString)), this, SLOT(getLyrics(QString)));
@@ -22,12 +30,15 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::getTrack(Track track) {
-	currentTrack = track;
-	currentTrack.downloadThumbnail();
+	if (track.getName() != "" && currentTrack != track) {
+		currentTrack = track;
+		currentTrack.downloadThumbnail();
+	}
 }
 
 void MainWindow::getLyrics(QString lyrics) {
-	ui->te_lyrics->setText(lyrics);
+	if (ui->te_lyrics->toPlainText() != lyrics)
+		ui->te_lyrics->setText(lyrics);
 }
 
 void MainWindow::onTrackNameChanged(QString name) {
@@ -47,4 +58,17 @@ void MainWindow::onTrackThumbnailChanged(QPixmap thumbnail) {
 								.scaled(ui->lb_thumbnail->width(),
 										ui->lb_thumbnail->height(),
 										Qt::KeepAspectRatio));
+}
+
+void MainWindow::refresh() {
+	cout << "MainWindow> Refreshing..." << endl;
+	api->getLyrics();
+}
+
+void MainWindow::on_actionRefresh_triggered() {
+    refresh();
+}
+
+void MainWindow::on_actionExit_triggered() {
+    qApp->exit(0);
 }

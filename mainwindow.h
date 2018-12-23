@@ -4,6 +4,7 @@
 #include <iostream>
 #include <QObject>
 #include <QMainWindow>
+#include <QTimer>
 
 #include "oauth/webapi.h"
 
@@ -30,11 +31,19 @@ private slots:
 	void onTrackAlbumName(QString albumName);
 	void onTrackThumbnailChanged(QPixmap thumbnail);
 	
+public slots:
+	void refresh();
+	
+private slots:
+	void on_actionRefresh_triggered();
+	void on_actionExit_triggered();
+	
 private:
 	Ui::MainWindow *ui;
 	
 	WebAPI* api;
 	Track currentTrack;
+	QTimer* timer;
 };
 
 #endif // MAINWINDOW_H
