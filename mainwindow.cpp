@@ -6,6 +6,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui(new Ui::MainWindow) {
 	ui->setupUi(this);
 	
+	pref = Preferences::getInstance(this);
+	
 	// Change the the name of "File" menu to the application name
 	ui->menuFile->setTitle(qApp->applicationName());
 	
@@ -14,7 +16,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	timer = new QTimer(this);
 	timer->setSingleShot(true);
 	connect(timer, SIGNAL(timeout()), this, SLOT(refresh()));
-	timer->start(refreshTimeout + 1000);
+	timer->start(pref->getRefreshTimeout() + 1000);
 	
 	connect(api, SIGNAL(spotifyPlayingTrackFetched(Track)), this, SLOT(getTrack(Track)));
 	connect(api, SIGNAL(geniusLyricsFetched(QString)), this, SLOT(getLyrics(QString)));
@@ -64,7 +66,7 @@ void MainWindow::refresh() {
 	cout << "MainWindow> Refreshing..." << endl;
 	timer->stop();
 	api->getLyrics();
-	timer->start(refreshTimeout);
+	timer->start(pref->getRefreshTimeout());
 }
 
 void MainWindow::on_actionRefresh_triggered() {

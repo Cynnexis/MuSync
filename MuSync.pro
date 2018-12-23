@@ -34,14 +34,16 @@ SOURCES += \
     oauth/webapi.cpp \
     models/track.cpp \
     threading/barrierdata.cpp \
-    threading/barrier.cpp
+    threading/barrier.cpp \
+    preferences.cpp
 
 HEADERS += \
         mainwindow.h \
     oauth/webapi.h \
     models/track.h \
     threading/barrierdata.h \
-    threading/barrier.h
+    threading/barrier.h \
+    preferences.h
 
 FORMS += \
         mainwindow.ui

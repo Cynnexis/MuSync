@@ -7,6 +7,7 @@
 #include <QTimer>
 
 #include "oauth/webapi.h"
+#include "preferences.h"
 
 using namespace std;
 
@@ -40,12 +41,11 @@ private slots:
 	
 private:
 	Ui::MainWindow *ui;
+	Preferences* pref;
 	
 	WebAPI* api;
 	Track currentTrack;
 	QTimer* timer;
-	
-	int refreshTimeout = 5000;
 };
 
 #endif // MAINWINDOW_H
