@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network
+QT       += core gui network webengine
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -35,7 +35,8 @@ SOURCES += \
     models/track.cpp \
     threading/barrierdata.cpp \
     threading/barrier.cpp \
-    preferences.cpp
+    preferences.cpp \
+    oauth\oauthdialog.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -43,7 +44,8 @@ HEADERS += \
     models/track.h \
     threading/barrierdata.h \
     threading/barrier.h \
-    preferences.h
+    preferences.h \
+    oauth\oauthdialog.h
 
 FORMS += \
         mainwindow.ui
@@ -71,3 +73,6 @@ INCLUDEPATH += "C:/Program Files/OpenSSL-Win64/include"
 DEPENDPATH += "C:/Program Files/OpenSSL-Win64/include"
 
 win32: LIBS += -L"$$PWD/lib/SSL/" -lopenssl -llibeay32 -llibssl -llibcrypto
+
+INCLUDEPATH += "C:\Qt\5.11.2\msvc2017_64\include\QtWebEngineWidgets"
+DEPENDPATH += "C:\Qt\5.11.2\msvc2017_64\include\QtWebEngineWidgets"

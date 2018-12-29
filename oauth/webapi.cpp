@@ -3,6 +3,9 @@
 WebAPI::WebAPI(QObject *parent) : QObject(parent) {
 	// Get the spotify API
 	o2_spotify = new O2(this);
+#ifndef QT_DEBUG
+	o2_spotify->setIgnoreSslErrors(true);
+#endif
 	connect(o2_spotify, SIGNAL(linkedChanged()), this, SLOT(onSpotifyLinkedChanged()));
 	connect(o2_spotify, SIGNAL(linkingSucceeded()), this, SLOT(onSpotifyLinkingSucceeded()));
 	connect(o2_spotify, SIGNAL(linkingFailed()), this, SLOT(onSpotifyLinkingFailed()));
@@ -11,6 +14,9 @@ WebAPI::WebAPI(QObject *parent) : QObject(parent) {
 	
 	// Get the genius API
 	o2_genius = new O2(this);
+#ifndef QT_DEBUG
+	o2_genius->setIgnoreSslErrors(true);
+#endif
 	connect(o2_genius, SIGNAL(linkedChanged()), this, SLOT(onGeniusLinkedChanged()));
 	connect(o2_genius, SIGNAL(linkingSucceeded()), this, SLOT(onGeniusLinkingSucceeded()));
 	connect(o2_genius, SIGNAL(linkingFailed()), this, SLOT(onGeniusLinkingFailed()));
@@ -66,7 +72,10 @@ void WebAPI::getLyrics(const Track& track) {
 	if (track.getName() == "" || track.getArtists().isEmpty())
 		return;
 	
+#ifdef QT_DEBUG
 	cout << "Genius> Fetching lyrics for " << track.getName().toStdString() << endl;
+#endif
+	
 	if (!o2_genius->linked())
 		throw "Not connected to the Genius API.";
 	
@@ -134,7 +143,9 @@ void WebAPI::onRequestFinished(int code, QNetworkReply::NetworkError error, QByt
 		throw "Error while fetching data from API.";
 	
 	if (code == requestSpotifyPlayingTrackId) {
+#ifdef QT_DEBUG
 		cout << "Spotify> " << QString(data).toStdString() << endl;
+#endif
 		
 		if (QString(data) == "") {
 			emit spotifyPlayingTrackFetched(Track());
@@ -166,7 +177,9 @@ void WebAPI::onRequestFinished(int code, QNetworkReply::NetworkError error, QByt
 		
 		Track track = Track(name, artists, albumName, thumbnailUrl, false, this);
 		
+#ifdef QT_DEBUG
 		cout << "Spotify> " << track.toString().toStdString() << endl;
+#endif
 		
 		// Emit the track
 		emit spotifyPlayingTrackFetched(track);
