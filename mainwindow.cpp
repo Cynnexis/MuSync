@@ -14,18 +14,21 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->menuFile->setTitle(qApp->applicationName());
 	
 	api = new WebAPI(this);
-	// TODO: move the two functions to a thread
-	api->connectToSpotify();
-	api->connectToGenius();
-	
-	timer = new QTimer(this);
-	timer->setSingleShot(true);
-	connect(timer, SIGNAL(timeout()), this, SLOT(refresh()));
-	timer->start(pref->getRefreshTimeout() + 1000);
 	
 	connect(api, SIGNAL(spotifyPlayingTrackFetched(Track)), this, SLOT(getTrack(Track)));
 	connect(api, SIGNAL(geniusLyricsFetched(QString)), this, SLOT(getLyrics(QString)));
 	
+	// Connect the API in another thread
+	timerRefresh = new QTimer(nullptr);
+	timerRefresh->setSingleShot(true);
+	threadAPIs = new QThread(this);
+	api->moveToThread(threadAPIs);
+	connect(this, SIGNAL(destroyed()), threadAPIs, SLOT(deleteLater()));
+	threadAPIs->start();
+	connectAPIs();
+	cout << "APIs launched" << endl;
+	
+	// Connect `currentTrack` to slots
 	connect(&currentTrack, SIGNAL(nameChanged(QString)), this, SLOT(onTrackNameChanged(QString)));
 	connect(&currentTrack, SIGNAL(artistsChanged(QStringList)), this, SLOT(onTrackArtistsChanged(QStringList)));
 	connect(&currentTrack, SIGNAL(albumNameChanged(QString)), this, SLOT(onTrackAlbumName(QString)));
@@ -33,6 +36,13 @@ MainWindow::MainWindow(QWidget *parent) :
 }
 
 MainWindow::~MainWindow() {
+	// Stop thread
+	if (threadAPIs != nullptr && threadAPIs->isRunning()) {
+		timerRefresh->stop();
+		threadAPIs->exit();
+	}
+	
+	// Delete graphic elements
 	delete ui;
 	//delete oauthdialog;
 }
@@ -76,6 +86,7 @@ void MainWindow::getTrack(Track track) {
 }
 
 void MainWindow::getLyrics(QString lyrics) {
+	ui->actionRefresh->setEnabled(true);
 	if (ui->te_lyrics->toPlainText() != lyrics)
 		ui->te_lyrics->setText(lyrics);
 }
@@ -102,11 +113,29 @@ void MainWindow::onTrackThumbnailChanged(QPixmap thumbnail) {
 										Qt::KeepAspectRatio));
 }
 
+void MainWindow::connectAPIs() {
+#ifdef QT_DEBUG
+	cout << "MainWindow> Connecting to APIs..." << endl;
+#endif
+	
+	api->connectToSpotify();
+	api->connectToGenius();
+	
+	timerRefresh->setSingleShot(true);
+	connect(timerRefresh, SIGNAL(timeout()), this, SLOT(refresh()));
+	timerRefresh->start(1000);
+	
+	ui->actionRefresh->setEnabled(true);
+}
+
 void MainWindow::refresh() {
-	cout << "MainWindow> Refreshing..." << endl;
-	timer->stop();
-	api->getLyrics();// TODO: move to thread
-	timer->start(pref->getRefreshTimeout());
+	if (timerRefresh != nullptr) {
+		cout << "MainWindow> Refreshing..." << endl;
+		timerRefresh->stop();
+		ui->actionRefresh->setEnabled(false);
+		api->getLyrics();
+		timerRefresh->start(pref->getRefreshTimeout());
+	}
 }
 
 void MainWindow::showEvent(QShowEvent* event) {

@@ -79,8 +79,6 @@ private:
 	QEventLoop loopGenius;
 	QString bufferSpotifyPlayingTrackData;
 	QString bufferGeniusSongInfo;
-	Barrier<QUrl>* barrier_spotifyLink;
-	Barrier<QString>* barrier_spotifyPalyingTrackData;
 	
 	OAuthDialog* webdialog = nullptr;
 	

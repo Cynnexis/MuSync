@@ -5,6 +5,8 @@
 #include <QObject>
 #include <QMainWindow>
 #include <QTimer>
+#include <QtConcurrent>
+#include <QFuture>
 
 #include "oauth/webapi.h"
 #include "oauth/oauthdialog.h"
@@ -37,6 +39,8 @@ private slots:
 	void onTrackAlbumName(QString albumName);
 	void onTrackThumbnailChanged(QPixmap thumbnail);
 	
+	void connectAPIs();
+	
 public slots:
 	void refresh();
 	
@@ -48,13 +52,14 @@ private slots:
 	void on_actionExit_triggered();
 	
 private:
-	Ui::MainWindow *ui;
-	Preferences* pref;
+	Ui::MainWindow *ui = nullptr;
+	Preferences* pref = nullptr;
 	OAuthDialog* dialog = nullptr;
 	
-	WebAPI* api;
+	WebAPI* api = nullptr;
 	Track currentTrack;
-	QTimer* timer;
+	QThread* threadAPIs;
+	QTimer* timerRefresh = nullptr;
 };
 
 #endif // MAINWINDOW_H
