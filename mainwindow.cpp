@@ -6,6 +6,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui(new Ui::MainWindow) {
 	ui->setupUi(this);
 	
+	changeTitle();
+	
 	pref = Preferences::getInstance(this);
 	
 	// Change the the name of "File" menu to the application name
@@ -29,12 +31,44 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow() {
 	delete ui;
+	//delete oauthdialog;
+}
+
+void MainWindow::changeTitle(QString title) {
+	if (title == "")
+		this->setWindowTitle(qApp->applicationName());
+	else
+		this->setWindowTitle(qApp->applicationName() + " - " + title);
+}
+
+void MainWindow::changeTitle(Track track) {
+	if (track.getName() == "")
+		changeTitle();
+	else {
+		QString artists = "";
+		for (int i = 0, imax = track.getArtists().length(); i < imax; i++) {
+			artists += track.getArtists()[i];
+			if (i + 2 < imax)
+				artists += ", ";
+			else if (i + 1 < imax)
+				artists += " and ";
+		}
+		
+		if (artists != "")
+			artists = " by " + artists;
+		
+		if (track.getAlbumName() != "")
+			artists += " [" + track.getAlbumName() + "]";
+		
+		changeTitle(track.getName() + artists);
+	}
 }
 
 void MainWindow::getTrack(Track track) {
 	if (track.getName() != "" && currentTrack != track) {
 		currentTrack = track;
 		currentTrack.downloadThumbnail();
+		changeTitle(currentTrack);
 	}
 }
 
@@ -45,14 +79,17 @@ void MainWindow::getLyrics(QString lyrics) {
 
 void MainWindow::onTrackNameChanged(QString name) {
 	ui->lb_title->setText(name);
+	changeTitle(currentTrack);
 }
 
 void MainWindow::onTrackArtistsChanged(QStringList artists) {
 	ui->lb_artists->setText(artists.join(", "));
+	changeTitle(currentTrack);
 }
 
 void MainWindow::onTrackAlbumName(QString albumName) {
 	ui->lb_album->setText(albumName);
+	changeTitle(currentTrack);
 }
 
 void MainWindow::onTrackThumbnailChanged(QPixmap thumbnail) {
@@ -67,6 +104,13 @@ void MainWindow::refresh() {
 	timer->stop();
 	api->getLyrics();
 	timer->start(pref->getRefreshTimeout());
+}
+
+void MainWindow::showEvent(QShowEvent* event) {
+	QWidget::showEvent(event);
+	
+	dialog = new OAuthDialog(QUrl("https://www.google.com/"), this);
+	dialog->show();
 }
 
 void MainWindow::on_actionRefresh_triggered() {

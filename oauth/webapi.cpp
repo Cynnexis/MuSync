@@ -1,8 +1,16 @@
 #include "webapi.h"
 
 WebAPI::WebAPI(QObject *parent) : QObject(parent) {
+	// Initialize `webdialog`
+	/*QWidget* potentialParent = nullptr;
+	try {
+		potentialParent = qobject_cast<QWidget*>(parent);
+	} catch (std::exception) {}
+	
+	webdialog = new OAuthDialog(potentialParent);*/
+	
 	// Get the spotify API
-	o2_spotify = new O2(this);
+	o2_spotify = new O2Spotify(this);
 #ifndef QT_DEBUG
 	o2_spotify->setIgnoreSslErrors(true);
 #endif
@@ -27,6 +35,11 @@ WebAPI::WebAPI(QObject *parent) : QObject(parent) {
 	connectToGenius();
 }
 
+WebAPI::~WebAPI() {
+	if (webdialog != nullptr)
+		delete webdialog;
+}
+
 void WebAPI::connectToSpotify() {
 	// Get the client id and secret from file
 	QString spotifyClientId = this->getCode(":/text/spotify-client-id");
@@ -35,9 +48,9 @@ void WebAPI::connectToSpotify() {
 	o2_spotify->setClientId(spotifyClientId);
 	o2_spotify->setClientSecret(spotifyClientSecret);
 	o2_spotify->setScope("user-read-currently-playing");
-	o2_spotify->setRequestUrl("https://accounts.spotify.com/authorize");
+	/*o2_spotify->setRequestUrl("https://accounts.spotify.com/authorize");
 	o2_spotify->setTokenUrl("https://accounts.spotify.com/api/token");
-	o2_spotify->setRefreshTokenUrl("https://accounts.spotify.com/api/token");
+	o2_spotify->setRefreshTokenUrl("https://accounts.spotify.com/api/token");*/
 	o2_spotify->setLocalPort(6814);
 	
 	o2_spotify->link();
@@ -107,11 +120,14 @@ void WebAPI::onSpotifyLinkingFailed() {
 }
 
 void WebAPI::onSpotifyOpenBrowser(const QUrl& url) {
-	emit spotifyOpenBrowser(url);
+	/*webdialog->load(url);
+	webdialog->show();*/
 	QDesktopServices::openUrl(url);
+	emit spotifyOpenBrowser(url);
 }
 
 void WebAPI::onSpotifyCloseBrowser() {
+	//webdialog->hide();
 	emit spotifyCloseBrowser();
 }
 
@@ -144,7 +160,7 @@ void WebAPI::onRequestFinished(int code, QNetworkReply::NetworkError error, QByt
 	
 	if (code == requestSpotifyPlayingTrackId) {
 #ifdef QT_DEBUG
-		cout << "Spotify> " << QString(data).toStdString() << endl;
+		cout << "Spotify> Got playing track: " << QString(data).toStdString() << endl;
 #endif
 		
 		if (QString(data) == "") {
@@ -188,6 +204,10 @@ void WebAPI::onRequestFinished(int code, QNetworkReply::NetworkError error, QByt
 		getLyrics(track);
 	}
 	else if (code == requestGeniusSongInfoId) {
+#ifdef QT_DEBUG
+		cout << "Genius> Got song info." << endl;
+#endif
+		
 		QString lyrics = "No lyrics found";
 		if (QString(data) == "") {
 			emit geniusLyricsFetched(lyrics);

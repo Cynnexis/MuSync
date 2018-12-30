@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network webengine
+QT       += core gui network webenginewidgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -48,7 +48,8 @@ HEADERS += \
     oauth\oauthdialog.h
 
 FORMS += \
-        mainwindow.ui
+        mainwindow.ui \
+    oauth/oauthdialog.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -74,5 +75,5 @@ DEPENDPATH += "C:/Program Files/OpenSSL-Win64/include"
 
 win32: LIBS += -L"$$PWD/lib/SSL/" -lopenssl -llibeay32 -llibssl -llibcrypto
 
-INCLUDEPATH += "C:\Qt\5.11.2\msvc2017_64\include\QtWebEngineWidgets"
-DEPENDPATH += "C:\Qt\5.11.2\msvc2017_64\include\QtWebEngineWidgets"
+#INCLUDEPATH += "C:\Qt\5.12.0\msvc2017_64\include\QtWebEngineWidgets"
+#DEPENDPATH += "C:\Qt\5.12.0\msvc2017_64\include\QtWebEngineWidgets"

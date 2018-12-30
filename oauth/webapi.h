@@ -16,18 +16,23 @@
 #include <QTextDocument>
 
 #include "lib/O2/o2.h"
+#include "lib/O2/o2spotify.h"
 #include "lib/O2/o2requestor.h"
 
 #include "models/track.h"
 #include "threading/barrier.h"
+#include "oauth/oauthdialog.h"
 
 using namespace std;
+
+// TODO: Use O2Spotify https://github.com/pipacs/o2/blob/master/src/o2spotify.h
 
 class WebAPI : public QObject
 {
 	Q_OBJECT
 public:
 	explicit WebAPI(QObject *parent = nullptr);
+	~WebAPI();
 	
 	void connectToSpotify();
 	void getPlayingTrack();
@@ -67,8 +72,10 @@ private slots:
 	void onRequestFinished(int code, QNetworkReply::NetworkError error, QByteArray data);
 	
 private:
-	O2* o2_spotify;
+	O2Spotify* o2_spotify;
 	O2* o2_genius;
+	
+	OAuthDialog* webdialog = nullptr;
 	
 	QString getCode(const QString& filename) const;
 	
