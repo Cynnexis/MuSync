@@ -4,21 +4,34 @@ Track::Track(const QString& name,
 			 const QArtistList& artists,
 			 const QString& albumName,
 			 const QPixmap thumbnail,
+			 const int& trackNumber,
 			 const QString& spotifyUri,
 			 const QString& spotifyWebUrl,
 			 QObject *parent) : QObject(parent) {
-	init(name, artists, albumName, thumbnail, spotifyUri, spotifyWebUrl);
+	init(name,
+		 artists,
+		 albumName,
+		 thumbnail,
+		 trackNumber,
+		 spotifyUri,
+		 spotifyWebUrl);
 }
 
 Track::Track(const QString& name,
 			 const QArtistList& artists,
 			 const QString& albumName,
-			 const QString thumbnailUrl,
+			 const QString thumbnailUrl, const int& trackNumber,
 			 const QString& spotifyUri,
 			 const QString& spotifyWebUrl,
 			 const bool& download,
 			 QObject* parent) : QObject(parent) {
-	init(name, artists, albumName, QPixmap(), spotifyUri, spotifyWebUrl);
+	init(name,
+		 artists,
+		 albumName,
+		 QPixmap(),
+		 trackNumber,
+		 spotifyUri,
+		 spotifyWebUrl);
 	
 	setThumbnail(thumbnailUrl, download);
 }
@@ -28,6 +41,7 @@ Track::Track(const Track& track) : QObject(track.parent()) {
 		 track.getArtists(),
 		 track.getAlbumName(),
 		 track.getThumbnail(),
+		 track.getTrackNumber(),
 		 track.getSpotifyUri(),
 		 track.getSpotifyWebUrl());
 	setThumbnail(track.getThumbnailUrl(), false);
@@ -38,14 +52,16 @@ Track::~Track() {}
 void Track::init(const QString& name,
 				 const QArtistList& artists,
 				 const QString& albumName,
-				 const QPixmap thumbnail,
-				 const QString spotifyUri,
-				 const QString spotifyWebUrl) {
+				 const QPixmap& thumbnail,
+				 const int& trackNumber,
+				 const QString& spotifyUri,
+				 const QString& spotifyWebUrl) {
 	this->thumbnailUrl = "";
 	setName(name);
 	setArtists(artists);
 	setAlbumName(albumName);
 	setThumbnail(thumbnail);
+	setTrackNumber(trackNumber);
 	setSpotifyUri(spotifyUri);
 	setSpotifyWebUrl(spotifyWebUrl);
 }
@@ -120,6 +136,15 @@ QUrl Track::getThumbnailUrl() const {
 	return this->thumbnailUrl;
 }
 
+int Track::getTrackNumber() const {
+	return trackNumber;
+}
+
+void Track::setTrackNumber(int value) {
+	trackNumber = value;
+	emit trackNumberChanged(trackNumber);
+}
+
 QString Track::getSpotifyUri() const {
 	return spotifyUri;
 }
@@ -144,6 +169,7 @@ QString Track::toString() const {
 		   "artists='" + getArtists().join(", ") + "', "
 		   "albumName='" + getAlbumName() + "', "
 		   "thumbnailUrl='" + getThumbnailUrl().toString() + "', "
+		   "trackNumber=" + QString::number(getTrackNumber()) + ", "
 		   "spotifyUri='" + getSpotifyUri() + "', "
 		   "spotifyWebUrl='" + getSpotifyWebUrl() + "'"
 		   "}";
@@ -154,6 +180,7 @@ bool Track::operator==(const Track& that) const {
 			this->getArtists() == that.getArtists() &&
 			this->getAlbumName() == that.getAlbumName() &&
 			this->getThumbnailUrl() == that.getThumbnailUrl() &&
+			this->getTrackNumber() == that.getTrackNumber() &&
 			this->getSpotifyUri() == that.getSpotifyUri() &&
 			this->getSpotifyWebUrl() == that.getSpotifyWebUrl();
 }
@@ -167,6 +194,7 @@ Track& Track::operator=(Track that) {
 		 that.getArtists(),
 		 that.getAlbumName(),
 		 that.getThumbnail(),
+		 that.getTrackNumber(),
 		 that.getSpotifyUri(),
 		 that.getSpotifyWebUrl());
 	setThumbnail(that.getThumbnailUrl(), false);

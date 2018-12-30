@@ -22,6 +22,7 @@ public:
 		  const QArtistList& artists = {},
 		  const QString& albumName = "",
 		  const QPixmap thumbnail = QPixmap(),
+		  const int& trackNumber = 0,
 		  const QString& spotifyUri = "",
 		  const QString& spotifyWebUrl = "",
 		  QObject *parent = nullptr);
@@ -29,6 +30,7 @@ public:
 		  const QArtistList& artists,
 		  const QString& albumName,
 		  const QString thumbnailUrl,
+		  const int& trackNumber,
 		  const QString& spotifyUri,
 		  const QString& spotifyWebUrl,
 		  const bool& download = true,
@@ -40,9 +42,10 @@ private:
 	void init(const QString& name,
 			  const QArtistList& artists,
 			  const QString& albumName,
-			  const QPixmap thumbnail,
-			  const QString spotifyUri,
-			  const QString spotifyWebUrl);
+			  const QPixmap& thumbnail,
+			  const int& trackNumber,
+			  const QString& spotifyUri,
+			  const QString& spotifyWebUrl);
 	
 private slots:
 	void thumbnailDownloadFinished(QNetworkReply* reply);
@@ -64,6 +67,9 @@ public:
 	void downloadThumbnail();
 	QUrl getThumbnailUrl() const;
 	
+	int getTrackNumber() const;
+	void setTrackNumber(int value);
+	
 	QString getSpotifyUri() const;
 	void setSpotifyUri(const QString& value);
 	
@@ -81,6 +87,7 @@ signals:
 	void artistsChanged(QArtistList);
 	void albumNameChanged(QString);
 	void thumbnailChanged(QPixmap);
+	void trackNumberChanged(int);
 	void spotifyUriChanged(QString);
 	void spotifyWebUrlChanged(QString);
 	
@@ -89,6 +96,7 @@ private:
 	QArtistList artists;
 	QString albumName;
 	QPixmap thumbnail;
+	int trackNumber;
 	QString spotifyUri;
 	QString spotifyWebUrl;
 	

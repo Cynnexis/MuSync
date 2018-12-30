@@ -120,6 +120,8 @@ Track WebAPI::getPlayingTrack() {
 	if (thumbnails.size() > 0)
 		thumbnailUrl = thumbnails[0].toObject()["url"].toString(thumbnailUrl);
 	
+	int trackNumber = json["track_number"].toInt(0);
+	
 	QString spotifyUri = json["uri"].toString("");
 	
 	QString spotifyWebUrl = "";
@@ -132,6 +134,7 @@ Track WebAPI::getPlayingTrack() {
 						artists,
 						albumName,
 						thumbnailUrl,
+						trackNumber,
 						spotifyUri,
 						spotifyWebUrl,
 						false);
