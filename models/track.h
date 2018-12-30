@@ -9,6 +9,9 @@
 #include <QNetworkReply>
 #include <QEventLoop>
 
+#include "artist.h"
+#include "qartistlist.h"
+
 using namespace std;
 
 class Track : public QObject
@@ -40,7 +43,6 @@ private:
 			  const QPixmap thumbnail,
 			  const QString spotifyUri,
 			  const QString spotifyWebUrl);
-	void copy(const Track& track);
 	
 private slots:
 	void thumbnailDownloadFinished(QNetworkReply* reply);
