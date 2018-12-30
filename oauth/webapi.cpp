@@ -85,10 +85,6 @@ Track WebAPI::getPlayingTrack() {
 		return Track();
 	}
 	
-#ifdef QT_DEBUG
-	//cout << "Spotify> " << bufferSpotifyPlayingTrackData.toStdString() << endl;
-#endif
-	
 	QJsonDocument doc = QJsonDocument::fromJson(bufferSpotifyPlayingTrackData.toUtf8());
 	QJsonObject json = doc.object();
 	
@@ -204,8 +200,8 @@ void WebAPI::connectToGenius() {
 #endif
 }
 
-QString WebAPI::getLyrics(const Track& track) {
-	QString lyrics = "No lyrics found";
+Lyrics WebAPI::getLyrics(const Track& track) {
+	Lyrics lyrics("No lyrics found");
 	
 	if (track.getName() == "" || track.getArtists().isEmpty())
 		return lyrics;
@@ -232,6 +228,10 @@ QString WebAPI::getLyrics(const Track& track) {
 	
 #ifdef QT_DEBUG
 	cout << "Genius> getLyrics> Answer received!" << endl;
+#endif
+	
+#ifdef QT_DEBUG
+	//cout << "Genius> " << bufferGeniusSongInfo.toStdString() << endl;
 #endif
 	
 	if (bufferGeniusSongInfo == "") {
@@ -264,8 +264,11 @@ QString WebAPI::getLyrics(const Track& track) {
 			firstResultPath = "/" + firstResultPath;
 		
 		if (firstResultPath != "") {
+			QString url = "https://genius.com" + firstResultPath;
+			lyrics.setGeniusUrl(url);
+			
 			// Fetch the HTML page containing the lyrics
-			QNetworkRequest request = QNetworkRequest(QUrl("https://genius.com" + firstResultPath));
+			QNetworkRequest request = QNetworkRequest(QUrl(url));
 			QNetworkAccessManager* mgr = new QNetworkAccessManager();
 			QNetworkReply* response = mgr->get(request);
 			QEventLoop event;
@@ -306,7 +309,7 @@ QString WebAPI::getLyrics(const Track& track) {
 			//QTextDocument text;
 			//text.setHtml(html);
 			//html = text.toPlainText();
-			lyrics = html;
+			lyrics.setLyrics(html);
 			
 			emit geniusLyricsFetched(lyrics);
 			return lyrics;
@@ -324,7 +327,7 @@ QString WebAPI::getLyrics(const Track& track) {
 	}
 }
 
-QString WebAPI::getLyrics() {
+Lyrics WebAPI::getLyrics() {
 	return getLyrics(getPlayingTrack());
 }
 

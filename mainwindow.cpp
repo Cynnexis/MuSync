@@ -19,7 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	api = new WebAPI();
 	
 	connect(api, SIGNAL(spotifyPlayingTrackFetched(Track)), this, SLOT(getTrack(Track)));
-	connect(api, SIGNAL(geniusLyricsFetched(QString)), this, SLOT(getLyrics(QString)));
+	connect(api, SIGNAL(geniusLyricsFetched(Lyrics)), this, SLOT(getLyrics(Lyrics)));
 	connect(api, SIGNAL(spotifyOpenBrowser(QUrl)), this, SLOT(requestOpenBrowser(QUrl)));
 	connect(api, SIGNAL(spotifyCloseBrowser()), this, SLOT(requestCloseBrowser()));
 	connect(api, SIGNAL(spotifyLinkingFailed()), this, SLOT(requestCloseBrowser()));
@@ -34,6 +34,10 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(&currentTrack, SIGNAL(artistsChanged(QArtistList)), this, SLOT(onTrackArtistsChanged(QArtistList)));
 	connect(&currentTrack, SIGNAL(albumChanged(Album)), this, SLOT(onTrackAlbumChanged(Album)));
 	connect(&currentTrack, SIGNAL(thumbnailChanged(QPixmap)), this, SLOT(onTrackThumbnailChanged(QPixmap)));
+	
+	// Connect `currentLyrics` to slots
+	connect(&currentLyrics, SIGNAL(lyricsChanged(QString)), this, SLOT(onLyricsLyricsChanged(QString)));
+	connect(&currentLyrics, SIGNAL(geniusUrlChanged(QString)), this, SLOT(onLyricsGeniusUrlChanged(QString)));
 }
 
 MainWindow::~MainWindow() {
@@ -68,14 +72,13 @@ void MainWindow::getTrack(Track track) {
 	if (track.getName() != "" && currentTrack != track) {
 		currentTrack = track;
 		currentTrack.downloadThumbnail();
-		changeTitle(currentTrack);
+		//changeTitle(currentTrack);
 	}
 }
 
-void MainWindow::getLyrics(QString lyrics) {
-	ui->actionRefresh->setEnabled(true);
-	if (ui->te_lyrics->toPlainText() != lyrics)
-		ui->te_lyrics->setText(lyrics);
+void MainWindow::getLyrics(Lyrics lyrics) {
+	if (lyrics.getLyrics() != "" && currentLyrics != lyrics)
+		currentLyrics = lyrics;
 }
 
 void MainWindow::onTrackNameChanged(QString name) {
@@ -99,6 +102,14 @@ void MainWindow::onTrackThumbnailChanged(QPixmap thumbnail) {
 										ui->lb_thumbnail->height(),
 										Qt::KeepAspectRatio));
 }
+
+void MainWindow::onLyricsLyricsChanged(QString lyrics) {
+	ui->actionRefresh->setEnabled(true);
+	if (ui->te_lyrics->toPlainText() != lyrics)
+		ui->te_lyrics->setText(lyrics);
+}
+
+void MainWindow::onLyricsGeniusUrlChanged(QString url) {}
 
 void MainWindow::connectAPIs() {
 #ifdef QT_DEBUG
@@ -181,7 +192,8 @@ void MainWindow::on_actionOpenAlbumOnSpotifyWeb_triggered() {
 }
 
 void MainWindow::on_actionOpenLyricsOnGenius_triggered() {
-    ui->statusBar->showMessage("Not implemented yet", 5000);
+	cout << "MainWindow> Genius URL: " << currentLyrics.getGeniusUrl().toStdString() << endl;
+	QDesktopServices::openUrl(QUrl(currentLyrics.getGeniusUrl()));
 }
 
 void MainWindow::on_actionAboutMuSync_triggered() {

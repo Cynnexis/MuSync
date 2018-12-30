@@ -88,7 +88,7 @@ bool Artist::operator>=(const Artist& that) const {
 	return this->getName() >= that.getName();
 }
 
-Artist&Artist::operator=(Artist that) {
+Artist& Artist::operator=(Artist that) {
 	init(that.getName(),
 		 that.getSpotifyUri(),
 		 that.getSpotifyWebUrl());

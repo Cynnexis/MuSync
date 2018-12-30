@@ -20,6 +20,7 @@
 #include "lib/O2/o2requestor.h"
 
 #include "models/track.h"
+#include "models/lyrics.h"
 #include "threading/barrier.h"
 #include "oauth/oauthdialog.h"
 
@@ -38,8 +39,8 @@ public:
 	Track getPlayingTrack();
 	
 	void connectToGenius();
-	QString getLyrics(const Track& track);
-	QString getLyrics();
+	Lyrics getLyrics(const Track& track);
+	Lyrics getLyrics();
 	
 signals:
 	void spotifyLinkedChanged(bool);
@@ -54,7 +55,7 @@ signals:
 	void geniusLinkingFailed();
 	void geniusOpenBrowser(QUrl);
 	void geniusCloseBrowser();
-	void geniusLyricsFetched(QString);
+	void geniusLyricsFetched(Lyrics);
 	
 private slots:
 	void onSpotifyLinkedChanged();

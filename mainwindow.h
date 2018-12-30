@@ -34,12 +34,15 @@ private:
 	
 private slots:
 	void getTrack(Track track);
-	void getLyrics(QString lyrics);
+	void getLyrics(Lyrics lyrics);
 	
 	void onTrackNameChanged(QString name);
 	void onTrackArtistsChanged(QArtistList artists);
 	void onTrackAlbumChanged(Album album);
 	void onTrackThumbnailChanged(QPixmap thumbnail);
+	
+	void onLyricsLyricsChanged(QString lyrics);
+	void onLyricsGeniusUrlChanged(QString url);
 	
 	void connectAPIs();
 	
@@ -72,6 +75,7 @@ private:
 	
 	WebAPI* api = nullptr;
 	Track currentTrack;
+	Lyrics currentLyrics;
 	QThread* threadAPIs = nullptr;
 	QTimer* timerRefresh = nullptr;
 };
