@@ -36,7 +36,8 @@ SOURCES += \
     preferences.cpp \
     oauth\oauthdialog.cpp \
     models/artist.cpp \
-    models/qartistlist.cpp
+    models/qartistlist.cpp \
+    models/album.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -48,7 +49,8 @@ HEADERS += \
     oauth\oauthdialog.h \
     threading/mutexdata.h \
     models/artist.h \
-    models/qartistlist.h
+    models/qartistlist.h \
+    models/album.h
 
 FORMS += \
         mainwindow.ui \
