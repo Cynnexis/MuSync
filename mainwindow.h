@@ -44,6 +44,9 @@ private slots:
 public slots:
 	void refresh();
 	
+	void requestOpenBrowser(const QUrl& url);
+	void requestCloseBrowser();
+	
 private:
 	void showEvent(QShowEvent* event);
 	
@@ -54,11 +57,11 @@ private slots:
 private:
 	Ui::MainWindow *ui = nullptr;
 	Preferences* pref = nullptr;
-	OAuthDialog* dialog = nullptr;
+	OAuthDialog* webdialog = nullptr;
 	
 	WebAPI* api = nullptr;
 	Track currentTrack;
-	QThread* threadAPIs;
+	QThread* threadAPIs = nullptr;
 	QTimer* timerRefresh = nullptr;
 };
 

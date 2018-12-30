@@ -35,9 +35,9 @@ private slots:
 	void onLoadStarted();
 	void onLoadProgress(int progress);
 	void onLoadFinished(bool);
-	void onUrlChanged(QUrl& url);
-	void onIconChanged(QIcon& icon);
-	void onTitleChanged(QString& title);
+	void onUrlChanged(QUrl url);
+	void onIconChanged(QIcon icon);
+	void onTitleChanged(QString title);
 	
 private:
 	Ui::OAuthDialog *ui;

@@ -13,20 +13,27 @@ MainWindow::MainWindow(QWidget *parent) :
 	// Change the the name of "File" menu to the application name
 	ui->menuFile->setTitle(qApp->applicationName());
 	
-	api = new WebAPI(this);
+	api = new WebAPI();
 	
 	connect(api, SIGNAL(spotifyPlayingTrackFetched(Track)), this, SLOT(getTrack(Track)));
 	connect(api, SIGNAL(geniusLyricsFetched(QString)), this, SLOT(getLyrics(QString)));
+	connect(api, SIGNAL(spotifyOpenBrowser(QUrl)), this, SLOT(requestOpenBrowser(QUrl)));
+	connect(api, SIGNAL(spotifyCloseBrowser()), this, SLOT(requestCloseBrowser()));
+	connect(api, SIGNAL(spotifyLinkingFailed()), this, SLOT(requestCloseBrowser()));
+	connect(api, SIGNAL(spotifyLinkingSucceeded()), this, SLOT(requestCloseBrowser()));
+	connect(api, SIGNAL(geniusOpenBrowser(QUrl)), this, SLOT(requestOpenBrowser(QUrl)));
+	connect(api, SIGNAL(geniusCloseBrowser()), this, SLOT(requestCloseBrowser()));
+	connect(api, SIGNAL(geniusLinkingSucceeded()), this, SLOT(requestCloseBrowser()));
+	connect(api, SIGNAL(geniusLinkingFailed()), this, SLOT(requestCloseBrowser()));
 	
 	// Connect the API in another thread
 	timerRefresh = new QTimer(nullptr);
 	timerRefresh->setSingleShot(true);
 	threadAPIs = new QThread(this);
-	api->moveToThread(threadAPIs);
+	//api->moveToThread(threadAPIs);
 	connect(this, SIGNAL(destroyed()), threadAPIs, SLOT(deleteLater()));
-	threadAPIs->start();
+	//threadAPIs->start();
 	connectAPIs();
-	cout << "APIs launched" << endl;
 	
 	// Connect `currentTrack` to slots
 	connect(&currentTrack, SIGNAL(nameChanged(QString)), this, SLOT(onTrackNameChanged(QString)));
@@ -44,7 +51,9 @@ MainWindow::~MainWindow() {
 	
 	// Delete graphic elements
 	delete ui;
-	//delete oauthdialog;
+	
+	if (webdialog != nullptr)
+		delete webdialog;
 }
 
 void MainWindow::changeTitle(QString title) {
@@ -121,6 +130,10 @@ void MainWindow::connectAPIs() {
 	api->connectToSpotify();
 	api->connectToGenius();
 	
+#ifdef QT_DEBUG
+	cout << "MainWindow> APIs connected." << endl;
+#endif
+	
 	timerRefresh->setSingleShot(true);
 	connect(timerRefresh, SIGNAL(timeout()), this, SLOT(refresh()));
 	timerRefresh->start(1000);
@@ -135,6 +148,21 @@ void MainWindow::refresh() {
 		ui->actionRefresh->setEnabled(false);
 		api->getLyrics();
 		timerRefresh->start(pref->getRefreshTimeout());
+	}
+}
+
+void MainWindow::requestOpenBrowser(const QUrl& url) {	
+	if (webdialog == nullptr)
+		webdialog = new OAuthDialog(this);
+	webdialog->load(url);
+	webdialog->show();
+}
+
+void MainWindow::requestCloseBrowser() {
+	if (webdialog != nullptr) {
+		webdialog->close();
+		webdialog->hide();
+		//delete webdialog;
 	}
 }
 

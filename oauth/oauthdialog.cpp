@@ -4,6 +4,7 @@
 OAuthDialog::OAuthDialog(QWidget *parent) :
 	QDialog(parent),
 	ui(new Ui::OAuthDialog) {
+	this->setWindowFlags(Qt::Dialog | Qt::Desktop);
 	init();
 }
 
@@ -27,8 +28,9 @@ void OAuthDialog::init()
 	connect(ui->webView, SIGNAL(loadStarted()), this, SLOT(onLoadStarted()));
 	connect(ui->webView, SIGNAL(loadProgress(int)), this, SLOT(onLoadProgress(int)));
 	connect(ui->webView, SIGNAL(loadFinished(bool)), this, SLOT(onLoadFinished(bool)));
-	connect(ui->webView, SIGNAL(urlChanged(QUrl&)), this, SLOT(onUrlChanged(QUrl&)));
-	connect(ui->webView, SIGNAL(iconChanged(QIcon&)), this, SLOT(onIconChanged(QIcon&)));
+	connect(ui->webView, SIGNAL(urlChanged(QUrl)), this, SLOT(onUrlChanged(QUrl)));
+	connect(ui->webView, SIGNAL(iconChanged(QIcon)), this, SLOT(onIconChanged(QIcon)));
+	connect(ui->webView, SIGNAL(titleChanged(QString)), this, SLOT(onTitleChanged(QString)));
 }
 
 void OAuthDialog::load(const QUrl& url) {
@@ -47,14 +49,17 @@ void OAuthDialog::onLoadFinished(bool) {
 	ui->pb_loading->setValue(ui->pb_loading->maximum());
 }
 
-void OAuthDialog::onUrlChanged(QUrl& url) {
+void OAuthDialog::onUrlChanged(QUrl url) {
 	ui->le_url->setText(url.toString());
+	
+	if (this->windowTitle() == "")
+		this->setWindowTitle(url.toString());
 }
 
-void OAuthDialog::onIconChanged(QIcon& icon) {
+void OAuthDialog::onIconChanged(QIcon icon) {
 	ui->lb_icon->setPixmap(icon.pixmap(ui->lb_icon->size()));
 }
 
-void OAuthDialog::onTitleChanged(QString& title) {
+void OAuthDialog::onTitleChanged(QString title) {
 	this->setWindowTitle(title);
 }

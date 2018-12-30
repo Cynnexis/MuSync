@@ -1,14 +1,6 @@
 #include "webapi.h"
 
 WebAPI::WebAPI(QObject *parent) : QObject(parent) {
-	// Initialize `webdialog`
-	/*QWidget* potentialParent = nullptr;
-	try {
-		potentialParent = qobject_cast<QWidget*>(parent);
-	} catch (std::exception) {}
-	
-	webdialog = new OAuthDialog(potentialParent);*/
-	
 	// Get the spotify API
 	o2_spotify = new O2Spotify(this);
 #ifndef QT_DEBUG
@@ -286,9 +278,12 @@ void WebAPI::onSpotifyOpenBrowser(const QUrl& url) {
 #ifdef QT_DEBUG
 	cout << "Spotify> Openning " << url.toString().toStdString() << endl;
 #endif
-	/*webdialog->load(url);
+	/*if (webdialog == nullptr) {
+		webdialog = new OAuthDialog();
+	}
+	webdialog->load(url);
 	webdialog->show();*/
-	QDesktopServices::openUrl(url);
+	//QDesktopServices::openUrl(url);
 	emit spotifyOpenBrowser(url);
 }
 
@@ -296,7 +291,8 @@ void WebAPI::onSpotifyCloseBrowser() {
 #ifdef QT_DEBUG
 	cout << "Spotify> You may close the browser." << endl;
 #endif
-	//webdialog->hide();
+	/*if (webdialog == nullptr && webdialog->isVisible())
+		webdialog->close();*/
 	emit spotifyCloseBrowser();
 }
 
@@ -322,8 +318,8 @@ void WebAPI::onGeniusOpenBrowser(const QUrl& url) {
 #ifdef QT_DEBUG
 	cout << "Genius> Openning " << url.toString().toStdString() << endl;
 #endif
+	//QDesktopServices::openUrl(url);
 	emit geniusOpenBrowser(url);
-	QDesktopServices::openUrl(url);
 }
 
 void WebAPI::onGeniusCloseBrowser() {
