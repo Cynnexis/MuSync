@@ -20,6 +20,15 @@ WebAPI::WebAPI(QObject *parent) : QObject(parent) {
 	connect(o2_spotify, SIGNAL(openBrowser(QUrl)), this, SLOT(onSpotifyOpenBrowser(QUrl)));
 	connect(o2_spotify, SIGNAL(closeBrowser()), this, SLOT(onSpotifyCloseBrowser()));
 	
+	// Get the client id and secret from file
+	QString spotifyClientId = this->getCode(":/text/spotify-client-id");
+	QString spotifyClientSecret = this->getCode(":/text/spotify-client-secret");
+	
+	o2_spotify->setClientId(spotifyClientId);
+	o2_spotify->setClientSecret(spotifyClientSecret);
+	o2_spotify->setScope("user-read-currently-playing");
+	o2_spotify->setLocalPort(6814);
+	
 	// Get the genius API
 	o2_genius = new O2(this);
 #ifndef QT_DEBUG
@@ -30,6 +39,16 @@ WebAPI::WebAPI(QObject *parent) : QObject(parent) {
 	connect(o2_genius, SIGNAL(linkingFailed()), this, SLOT(onGeniusLinkingFailed()));
 	connect(o2_genius, SIGNAL(openBrowser(QUrl)), this, SLOT(onGeniusOpenBrowser(QUrl)));
 	connect(o2_genius, SIGNAL(closeBrowser()), this, SLOT(onGeniusCloseBrowser()));
+	
+	QString geniusClientId = this->getCode(":/text/genius-client-id");
+	QString geniusClientSecret = this->getCode(":/text/genius-client-secret");
+	
+	o2_genius->setClientId(geniusClientId);
+	o2_genius->setClientSecret(geniusClientSecret);
+	o2_genius->setRequestUrl("https://api.genius.com/oauth/authorize");
+	o2_genius->setTokenUrl("https://api.genius.com/oauth/token");
+	o2_genius->setRefreshTokenUrl("https://api.genius.com/oauth/token");
+	o2_genius->setLocalPort(6815);
 }
 
 WebAPI::~WebAPI() {
@@ -38,17 +57,10 @@ WebAPI::~WebAPI() {
 }
 
 void WebAPI::connectToSpotify() {
-	// Get the client id and secret from file
-	QString spotifyClientId = this->getCode(":/text/spotify-client-id");
-	QString spotifyClientSecret = this->getCode(":/text/spotify-client-secret");
-	
-	o2_spotify->setClientId(spotifyClientId);
-	o2_spotify->setClientSecret(spotifyClientSecret);
-	o2_spotify->setScope("user-read-currently-playing");
-	o2_spotify->setLocalPort(6814);
-	
 	o2_spotify->link();
-	loopSpotify.exec();
+	
+	if (!o2_spotify->linked())
+		loopSpotify.exec();
 	
 #ifdef QT_DEBUG
 	cout << "Spotify> Connected!" << endl;
@@ -61,12 +73,20 @@ Track WebAPI::getPlayingTrack() {
 		throw "Not connected to the Spotify API.";
 	}
 	
+#ifdef QT_DEBUG
+	cout << "Spotify> Sending request..." << endl;
+#endif
+	
 	QNetworkRequest request = QNetworkRequest(QUrl("https://api.spotify.com/v1/me/player/currently-playing"));
 	QNetworkAccessManager *mgr = new QNetworkAccessManager(this);
 	O2Requestor *requestor = new O2Requestor(mgr, o2_spotify, this);
 	connect(requestor, SIGNAL(finished(int, QNetworkReply::NetworkError, QByteArray)), this, SLOT(onRequestFinished(int, QNetworkReply::NetworkError, QByteArray)));
 	requestSpotifyPlayingTrackId = requestor->get(request);
 	loopSpotify.exec();
+	
+#ifdef QT_DEBUG
+	cout << "Spotify> Answer received!" << endl;
+#endif
 	
 	if (bufferSpotifyPlayingTrackData == "") {
 		emit spotifyPlayingTrackFetched(Track());
@@ -107,28 +127,22 @@ Track WebAPI::getPlayingTrack() {
 	return track;
 }
 
-void WebAPI::connectToGenius() {
-	QString geniusClientId = this->getCode(":/text/genius-client-id");
-	QString geniusClientSecret = this->getCode(":/text/genius-client-secret");
-	
-	o2_genius->setClientId(geniusClientId);
-	o2_genius->setClientSecret(geniusClientSecret);
-	o2_genius->setRequestUrl("https://api.genius.com/oauth/authorize");
-	o2_genius->setTokenUrl("https://api.genius.com/oauth/token");
-	o2_genius->setRefreshTokenUrl("https://api.genius.com/oauth/token");
-	o2_genius->setLocalPort(6815);
-	
+void WebAPI::connectToGenius() {	
 	o2_genius->link();
-	loopGenius.exec();
+	
+	if (!o2_genius->linked())
+		loopGenius.exec();
 	
 #ifdef QT_DEBUG
 	cout << "Genius> Connected!" << endl;
 #endif
 }
 
-void WebAPI::getLyrics(const Track& track) {
+QString WebAPI::getLyrics(const Track& track) {
+	QString lyrics = "No lyrics found";
+	
 	if (track.getName() == "" || track.getArtists().isEmpty())
-		return;
+		return lyrics;
 	
 #ifdef QT_DEBUG
 	cout << "Genius> Fetching lyrics for " << track.getName().toStdString() << endl;
@@ -139,6 +153,10 @@ void WebAPI::getLyrics(const Track& track) {
 		throw "Not connected to the Genius API.";
 	}
 	
+#ifdef QT_DEBUG
+	cout << "Genius> getLyrics> Sending request..." << endl;
+#endif
+	
 	QNetworkRequest request = QNetworkRequest(QUrl("https://api.genius.com/search?q=" + QUrl::toPercentEncoding(track.getName() + " " + track.getArtists().join(","))));
 	QNetworkAccessManager *mgr = new QNetworkAccessManager(this);
 	O2Requestor *requestor = new O2Requestor(mgr, o2_genius, this);
@@ -146,10 +164,13 @@ void WebAPI::getLyrics(const Track& track) {
 	requestGeniusSongInfoId = requestor->get(request);
 	loopGenius.exec();
 	
-	QString lyrics = "No lyrics found";
+#ifdef QT_DEBUG
+	cout << "Genius> getLyrics> Answer received!" << endl;
+#endif
+	
 	if (bufferGeniusSongInfo == "") {
 		emit geniusLyricsFetched(lyrics);
-		return;
+		return lyrics;
 	}
 	
 	QJsonDocument doc = QJsonDocument::fromJson(bufferGeniusSongInfo.toUtf8());
@@ -191,7 +212,7 @@ void WebAPI::getLyrics(const Track& track) {
 			// If no lyrics detected, return no lyrics
 			if (list.length() == 0) {
 				emit geniusLyricsFetched(lyrics);
-				return;
+				return lyrics;
 			}
 			
 			html = list[1];
@@ -200,7 +221,7 @@ void WebAPI::getLyrics(const Track& track) {
 			// If no lyrics detected, return no lyrics
 			if (list.length() == 0) {
 				emit geniusLyricsFetched(lyrics);
-				return;
+				return lyrics;
 			}
 			
 			html = list[1];
@@ -208,7 +229,7 @@ void WebAPI::getLyrics(const Track& track) {
 			
 			if (list.length() == 0) {
 				emit geniusLyricsFetched(lyrics);
-				return;
+				return lyrics;
 			}
 			
 			html = list[0];
@@ -221,24 +242,24 @@ void WebAPI::getLyrics(const Track& track) {
 			//html = text.toPlainText();
 			lyrics = html;
 			
-			//cout << "Lyrics> " << lyrics.toStdString() << endl;
 			emit geniusLyricsFetched(lyrics);
+			return lyrics;
 		}
 		// If no path found, return no lyrics
 		else {
 			emit geniusLyricsFetched(lyrics);
-			return;
+			return lyrics;
 		}
 	}
 	// If no result found, return no lyrics
 	else {
 		emit geniusLyricsFetched(lyrics);
-		return;
+		return lyrics;
 	}
 }
 
-void WebAPI::getLyrics() {
-	getLyrics(getPlayingTrack());
+QString WebAPI::getLyrics() {
+	return getLyrics(getPlayingTrack());
 }
 
 /* PRIVATE SLOTS */

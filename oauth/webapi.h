@@ -38,8 +38,8 @@ public:
 	Track getPlayingTrack();
 	
 	void connectToGenius();
-	void getLyrics(const Track& track);
-	void getLyrics();
+	QString getLyrics(const Track& track);
+	QString getLyrics();
 	
 signals:
 	void spotifyLinkedChanged(bool);

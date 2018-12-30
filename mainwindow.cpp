@@ -14,6 +14,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->menuFile->setTitle(qApp->applicationName());
 	
 	api = new WebAPI(this);
+	// TODO: move the two functions to a thread
+	api->connectToSpotify();
+	api->connectToGenius();
 	
 	timer = new QTimer(this);
 	timer->setSingleShot(true);
@@ -102,15 +105,15 @@ void MainWindow::onTrackThumbnailChanged(QPixmap thumbnail) {
 void MainWindow::refresh() {
 	cout << "MainWindow> Refreshing..." << endl;
 	timer->stop();
-	api->getLyrics();
+	api->getLyrics();// TODO: move to thread
 	timer->start(pref->getRefreshTimeout());
 }
 
 void MainWindow::showEvent(QShowEvent* event) {
-	QWidget::showEvent(event);
+	QMainWindow::showEvent(event);
 	
-	dialog = new OAuthDialog(QUrl("https://www.google.com/"), this);
-	dialog->show();
+	/*dialog = new OAuthDialog(QUrl("https://www.google.com/"), this);
+	dialog->show();*/
 }
 
 void MainWindow::on_actionRefresh_triggered() {
