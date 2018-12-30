@@ -72,6 +72,9 @@
                   <bold>true</bold>
                  </font>
                 </property>
+                <property name="contextMenuPolicy">
+                 <enum>Qt::ActionsContextMenu</enum>
+                </property>
                 <property name="text">
                  <string>Title</string>
                 </property>
@@ -143,17 +146,42 @@
    </widget>
    <widget class="QMenu" name="menuOptions">
     <property name="title">
-     <string>Options</string>
+     <string>Spotify</string>
     </property>
+    <widget class="QMenu" name="menuAlbum">
+     <property name="title">
+      <string>Album</string>
+     </property>
+     <addaction name="actionOpenAlbumOnSpotifyApp"/>
+     <addaction name="actionOpenAlbumOnSpotifyWeb"/>
+    </widget>
+    <widget class="QMenu" name="menuTrack">
+     <property name="title">
+      <string>Track</string>
+     </property>
+     <addaction name="actionOpenTrackOnSpotifyApp"/>
+     <addaction name="actionOpenTrackOnSpotifyWeb"/>
+    </widget>
+    <addaction name="menuTrack"/>
+    <addaction name="menuAlbum"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
+     <string>Genius</string>
+    </property>
+    <addaction name="actionOpenLyricsOnGenius"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp_2">
+    <property name="title">
      <string>Help</string>
     </property>
+    <addaction name="actionAboutMuSync"/>
+    <addaction name="actionAboutQt"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuOptions"/>
    <addaction name="menuHelp"/>
+   <addaction name="menuHelp_2"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -176,6 +204,56 @@
   <action name="actionExit">
    <property name="text">
     <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionOpenTrackOnSpotifyApp">
+   <property name="text">
+    <string>Open on Spotify App</string>
+   </property>
+   <property name="toolTip">
+    <string>Open the track on the Spotify application on your computer.</string>
+   </property>
+  </action>
+  <action name="actionOpenTrackOnSpotifyWeb">
+   <property name="text">
+    <string>Open on Spotify Web</string>
+   </property>
+   <property name="toolTip">
+    <string>Open the track on the Spotify web page on your computer.</string>
+   </property>
+  </action>
+  <action name="actionOpenAlbumOnSpotifyApp">
+   <property name="text">
+    <string>Open on Spotify App</string>
+   </property>
+   <property name="toolTip">
+    <string>Open the album on the Spotify application on your computer.</string>
+   </property>
+  </action>
+  <action name="actionOpenAlbumOnSpotifyWeb">
+   <property name="text">
+    <string>Open on Spotify Web</string>
+   </property>
+   <property name="toolTip">
+    <string>Open the album on the Spotify web page on your computer.</string>
+   </property>
+  </action>
+  <action name="actionOpenLyricsOnGenius">
+   <property name="text">
+    <string>Open Lyrics on Genius</string>
+   </property>
+   <property name="toolTip">
+    <string>Open the Genius webpage with the Lyrics</string>
+   </property>
+  </action>
+  <action name="actionAboutMuSync">
+   <property name="text">
+    <string>About MuSync...</string>
+   </property>
+  </action>
+  <action name="actionAboutQt">
+   <property name="text">
+    <string>About Qt...</string>
    </property>
   </action>
  </widget>

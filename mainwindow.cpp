@@ -13,6 +13,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	// Change the the name of "File" menu to the application name
 	ui->menuFile->setTitle(qApp->applicationName());
 	
+	ui->lb_title->addActions({ui->actionOpenTrackOnSpotifyApp, ui->actionOpenTrackOnSpotifyWeb});
+	ui->lb_album->addActions({ui->actionOpenAlbumOnSpotifyApp, ui->actionOpenAlbumOnSpotifyWeb});
+	
 	api = new WebAPI();
 	
 	connect(api, SIGNAL(spotifyPlayingTrackFetched(Track)), this, SLOT(getTrack(Track)));
@@ -57,18 +60,8 @@ void MainWindow::changeTitle(QString title) {
 void MainWindow::changeTitle(Track track) {
 	if (track.getName() == "")
 		changeTitle();
-	else {
-		/*QString artists = track.getArtists().join();
-		
-		if (artists != "")
-			artists = " by " + artists;
-		
-		if (track.getAlbum().getName() != "")
-			artists += " [" + track.getAlbum() + "]";
-		
-		changeTitle(track.getName() + artists);*/
+	else
 		changeTitle(track.toString());
-	}
 }
 
 void MainWindow::getTrack(Track track) {
@@ -169,4 +162,32 @@ void MainWindow::on_actionRefresh_triggered() {
 
 void MainWindow::on_actionExit_triggered() {
     qApp->exit(0);
+}
+
+void MainWindow::on_actionOpenTrackOnSpotifyApp_triggered() {
+    QDesktopServices::openUrl(QUrl(currentTrack.getSpotifyUri()));
+}
+
+void MainWindow::on_actionOpenTrackOnSpotifyWeb_triggered() {
+	QDesktopServices::openUrl(QUrl(currentTrack.getSpotifyWebUrl()));
+}
+
+void MainWindow::on_actionOpenAlbumOnSpotifyApp_triggered() {
+	QDesktopServices::openUrl(QUrl(currentTrack.getAlbum().getSpotifyUri()));
+}
+
+void MainWindow::on_actionOpenAlbumOnSpotifyWeb_triggered() {
+	QDesktopServices::openUrl(QUrl(currentTrack.getAlbum().getSpotifyWebUrl()));
+}
+
+void MainWindow::on_actionOpenLyricsOnGenius_triggered() {
+    ui->statusBar->showMessage("Not implemented yet", 5000);
+}
+
+void MainWindow::on_actionAboutMuSync_triggered() {
+    QMessageBox::about(this, "About MuSync...", "MuSync is a Qt base application that fetch the lyrics of your current song on Spotify.");
+}
+
+void MainWindow::on_actionAboutQt_triggered() {
+    QMessageBox::aboutQt(this, "About Qt...");
 }

@@ -7,6 +7,7 @@
 #include <QTimer>
 #include <QtConcurrent>
 #include <QFuture>
+#include <QMessageBox>
 
 #include "oauth/webapi.h"
 #include "oauth/oauthdialog.h"
@@ -54,6 +55,15 @@ private:
 private slots:
 	void on_actionRefresh_triggered();
 	void on_actionExit_triggered();
+	
+	void on_actionOpenTrackOnSpotifyApp_triggered();
+	void on_actionOpenTrackOnSpotifyWeb_triggered();
+	void on_actionOpenAlbumOnSpotifyApp_triggered();
+	void on_actionOpenAlbumOnSpotifyWeb_triggered();
+	void on_actionOpenLyricsOnGenius_triggered();
+	
+	void on_actionAboutMuSync_triggered();
+	void on_actionAboutQt_triggered();
 	
 private:
 	Ui::MainWindow *ui = nullptr;
