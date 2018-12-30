@@ -46,6 +46,8 @@ public:
 	bool operator>(const Artist& that) const;
 	bool operator<=(const Artist& that) const;
 	bool operator>=(const Artist& that) const;
+	/*QString operator+(const QString& str);
+	string operator+(const string& str);*/
 	Artist& operator=(Artist that);
 	
 signals:

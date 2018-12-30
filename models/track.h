@@ -11,6 +11,7 @@
 
 #include "artist.h"
 #include "qartistlist.h"
+#include "album.h"
 
 using namespace std;
 
@@ -20,7 +21,7 @@ class Track : public QObject
 public:
 	Track(const QString& name = "",
 		  const QArtistList& artists = {},
-		  const QString& albumName = "",
+		  const Album& album = Album(),
 		  const QPixmap thumbnail = QPixmap(),
 		  const int& trackNumber = 0,
 		  const QString& spotifyUri = "",
@@ -28,7 +29,7 @@ public:
 		  QObject *parent = nullptr);
 	Track(const QString& name,
 		  const QArtistList& artists,
-		  const QString& albumName,
+		  const Album& album,
 		  const QString thumbnailUrl,
 		  const int& trackNumber,
 		  const QString& spotifyUri,
@@ -41,7 +42,7 @@ public:
 private:
 	void init(const QString& name,
 			  const QArtistList& artists,
-			  const QString& albumName,
+			  const Album& album,
 			  const QPixmap& thumbnail,
 			  const int& trackNumber,
 			  const QString& spotifyUri,
@@ -57,8 +58,8 @@ public:
 	QArtistList getArtists() const;
 	void setArtists(const QArtistList& value);
 	
-	QString getAlbumName() const;
-	void setAlbumName(const QString& value);
+	Album getAlbum() const;
+	void setAlbum(const Album& value);
 	
 	QPixmap getThumbnail() const;
 	void setThumbnail(const QPixmap& value);
@@ -85,7 +86,7 @@ public:
 signals:
 	void nameChanged(QString);
 	void artistsChanged(QArtistList);
-	void albumNameChanged(QString);
+	void albumChanged(Album);
 	void thumbnailChanged(QPixmap);
 	void trackNumberChanged(int);
 	void spotifyUriChanged(QString);
@@ -95,6 +96,7 @@ private:
 	QString name;
 	QArtistList artists;
 	QString albumName;
+	Album album;
 	QPixmap thumbnail;
 	int trackNumber;
 	QString spotifyUri;

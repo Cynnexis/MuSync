@@ -112,7 +112,52 @@ Track WebAPI::getPlayingTrack() {
 			artists.append(Artist(artistName, artistSpotifyUri, artistSpotifyWebUrl));
 	}
 	
-	QString albumName = json["album"].toObject()["name"].toString("");
+	QString albumName = "";
+	QString albumRawReleaseDate = "";
+	QDate albumReleaseDate = QDate(0, 1, 1);
+	int albumTotalTracks = 0;
+	QString albumSpotifyUri = "";
+	QString albumSpotifyWebUrl = "";
+	
+	// Construct 'album"
+	{
+		// Get JSON object of album
+		QJsonObject album = json["album"].toObject();
+		
+		// Get the name
+		albumName = album["name"].toString("");
+		
+		// Get the release date
+		albumRawReleaseDate = album["release_date"].toString("");
+		
+		// Parse the QString to QDate
+		if (albumRawReleaseDate != "") {
+			QStringList splitted = albumRawReleaseDate.split("T")[0].split("-");
+			
+			if (splitted.length() >= 3) {
+				bool s1 = false, s2 = false, s3 = false;
+				QDate d = QDate(splitted[0].toInt(&s1), splitted[1].toInt(&s2), splitted[2].toInt(&s3));
+				
+				if (s1 && s2 && s3)
+					albumReleaseDate = d;
+			}
+		}
+		
+		// Get the total tracks
+		albumTotalTracks = album["total_tracks"].toInt(0);
+		
+		// Get spotify uri
+		albumSpotifyUri = album["uri"].toString("");
+		
+		// Get spotify web url
+		if (album.keys().contains("external_urls")) {
+			QJsonObject external_urls = json["external_urls"].toObject();
+			
+			albumSpotifyWebUrl = external_urls["spotify"].toString("");
+		}
+	}
+	
+	Album album(albumName, albumReleaseDate, albumTotalTracks, albumSpotifyUri, albumSpotifyWebUrl);
 	
 	QJsonArray thumbnails = json["album"].toObject()["images"].toArray();
 	QString thumbnailUrl = "";
@@ -132,7 +177,7 @@ Track WebAPI::getPlayingTrack() {
 	
 	Track track = Track(name,
 						artists,
-						albumName,
+						album,
 						thumbnailUrl,
 						trackNumber,
 						spotifyUri,

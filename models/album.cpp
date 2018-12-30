@@ -79,6 +79,13 @@ void Album::setSpotifyWebUrl(const QString& value) {
 }
 
 QString Album::toString() const {
+	/*return "Album{"
+			"name='" + getName() + "', "
+			"releaseDate='" + getReleaseDate().toString() + "', "
+			"totalTracks=" + QString::number(getTotalTracks()) + ", "
+			"spotifyUri='" + getSpotifyUri() + "', "
+			"spotifyWebUrl='" + getSpotifyWebUrl() + "'"
+			"}";*/
 	return getName();
 }
 

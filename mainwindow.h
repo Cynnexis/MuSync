@@ -37,7 +37,7 @@ private slots:
 	
 	void onTrackNameChanged(QString name);
 	void onTrackArtistsChanged(QArtistList artists);
-	void onTrackAlbumName(QString albumName);
+	void onTrackAlbumChanged(Album album);
 	void onTrackThumbnailChanged(QPixmap thumbnail);
 	
 	void connectAPIs();

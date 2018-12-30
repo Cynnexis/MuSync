@@ -29,7 +29,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	// Connect `currentTrack` to slots
 	connect(&currentTrack, SIGNAL(nameChanged(QString)), this, SLOT(onTrackNameChanged(QString)));
 	connect(&currentTrack, SIGNAL(artistsChanged(QArtistList)), this, SLOT(onTrackArtistsChanged(QArtistList)));
-	connect(&currentTrack, SIGNAL(albumNameChanged(QString)), this, SLOT(onTrackAlbumName(QString)));
+	connect(&currentTrack, SIGNAL(albumChanged(Album)), this, SLOT(onTrackAlbumChanged(Album)));
 	connect(&currentTrack, SIGNAL(thumbnailChanged(QPixmap)), this, SLOT(onTrackThumbnailChanged(QPixmap)));
 }
 
@@ -58,15 +58,16 @@ void MainWindow::changeTitle(Track track) {
 	if (track.getName() == "")
 		changeTitle();
 	else {
-		QString artists = track.getArtists().join();
+		/*QString artists = track.getArtists().join();
 		
 		if (artists != "")
 			artists = " by " + artists;
 		
-		if (track.getAlbumName() != "")
-			artists += " [" + track.getAlbumName() + "]";
+		if (track.getAlbum().getName() != "")
+			artists += " [" + track.getAlbum() + "]";
 		
-		changeTitle(track.getName() + artists);
+		changeTitle(track.getName() + artists);*/
+		changeTitle(track.toString());
 	}
 }
 
@@ -94,8 +95,8 @@ void MainWindow::onTrackArtistsChanged(QArtistList artists) {
 	changeTitle(currentTrack);
 }
 
-void MainWindow::onTrackAlbumName(QString albumName) {
-	ui->lb_album->setText(albumName);
+void MainWindow::onTrackAlbumChanged(Album album) {
+	ui->lb_album->setText(album.getName());
 	changeTitle(currentTrack);
 }
 

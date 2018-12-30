@@ -2,7 +2,7 @@
 
 Track::Track(const QString& name,
 			 const QArtistList& artists,
-			 const QString& albumName,
+			 const Album& album,
 			 const QPixmap thumbnail,
 			 const int& trackNumber,
 			 const QString& spotifyUri,
@@ -10,7 +10,7 @@ Track::Track(const QString& name,
 			 QObject *parent) : QObject(parent) {
 	init(name,
 		 artists,
-		 albumName,
+		 album,
 		 thumbnail,
 		 trackNumber,
 		 spotifyUri,
@@ -19,7 +19,7 @@ Track::Track(const QString& name,
 
 Track::Track(const QString& name,
 			 const QArtistList& artists,
-			 const QString& albumName,
+			 const Album& album,
 			 const QString thumbnailUrl, const int& trackNumber,
 			 const QString& spotifyUri,
 			 const QString& spotifyWebUrl,
@@ -27,7 +27,7 @@ Track::Track(const QString& name,
 			 QObject* parent) : QObject(parent) {
 	init(name,
 		 artists,
-		 albumName,
+		 album,
 		 QPixmap(),
 		 trackNumber,
 		 spotifyUri,
@@ -39,7 +39,7 @@ Track::Track(const QString& name,
 Track::Track(const Track& track) : QObject(track.parent()) {
 	init(track.getName(),
 		 track.getArtists(),
-		 track.getAlbumName(),
+		 track.getAlbum(),
 		 track.getThumbnail(),
 		 track.getTrackNumber(),
 		 track.getSpotifyUri(),
@@ -51,7 +51,7 @@ Track::~Track() {}
 
 void Track::init(const QString& name,
 				 const QArtistList& artists,
-				 const QString& albumName,
+				 const Album& album,
 				 const QPixmap& thumbnail,
 				 const int& trackNumber,
 				 const QString& spotifyUri,
@@ -59,7 +59,7 @@ void Track::init(const QString& name,
 	this->thumbnailUrl = "";
 	setName(name);
 	setArtists(artists);
-	setAlbumName(albumName);
+	setAlbum(album);
 	setThumbnail(thumbnail);
 	setTrackNumber(trackNumber);
 	setSpotifyUri(spotifyUri);
@@ -92,13 +92,13 @@ void Track::setArtists(const QArtistList& value) {
 	emit artistsChanged(artists);
 }
 
-QString Track::getAlbumName() const {
-	return albumName;
+Album Track::getAlbum() const {
+	return album;
 }
 
-void Track::setAlbumName(const QString& value) {
-	albumName = value;
-	emit albumNameChanged(albumName);
+void Track::setAlbum(const Album& value) {
+	album = value;
+	emit albumChanged(album);
 }
 
 QPixmap Track::getThumbnail() const {
@@ -164,21 +164,31 @@ void Track::setSpotifyWebUrl(const QString& value) {
 }
 
 QString Track::toString() const {
-	return "Track{"
+	/*return "Track{"
 		   "name='" + getName() + "', "
 		   "artists='" + getArtists().join(", ") + "', "
-		   "albumName='" + getAlbumName() + "', "
+		   "album='" + getAlbum().getName() + "', "
 		   "thumbnailUrl='" + getThumbnailUrl().toString() + "', "
 		   "trackNumber=" + QString::number(getTrackNumber()) + ", "
 		   "spotifyUri='" + getSpotifyUri() + "', "
 		   "spotifyWebUrl='" + getSpotifyWebUrl() + "'"
-		   "}";
+		   "}";*/
+	QString repr = getName();
+	QString rArtists = getArtists().join();
+	
+	if (rArtists != "")
+		repr += " by " + rArtists;
+	
+	if (getAlbum().getName() != "")
+		repr += " [" + getAlbum().getName() + "]";
+	
+	return repr;
 }
 
 bool Track::operator==(const Track& that) const {
 	return this->getName() == that.getName() &&
 			this->getArtists() == that.getArtists() &&
-			this->getAlbumName() == that.getAlbumName() &&
+			this->getAlbum() == that.getAlbum() &&
 			this->getThumbnailUrl() == that.getThumbnailUrl() &&
 			this->getTrackNumber() == that.getTrackNumber() &&
 			this->getSpotifyUri() == that.getSpotifyUri() &&
@@ -192,15 +202,11 @@ bool Track::operator!=(const Track& that) const {
 Track& Track::operator=(Track that) {
 	init(that.getName(),
 		 that.getArtists(),
-		 that.getAlbumName(),
+		 that.getAlbum(),
 		 that.getThumbnail(),
 		 that.getTrackNumber(),
 		 that.getSpotifyUri(),
 		 that.getSpotifyWebUrl());
 	setThumbnail(that.getThumbnailUrl(), false);
 	return *this;
-}
-
-ostream& operator<<(ostream &stream, const Track &track) {
-	return stream << track.toString().toStdString();
 }
