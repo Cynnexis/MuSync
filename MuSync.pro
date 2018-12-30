@@ -33,8 +33,6 @@ SOURCES += \
         mainwindow.cpp \
     oauth/webapi.cpp \
     models/track.cpp \
-    threading/barrierdata.cpp \
-    threading/barrier.cpp \
     preferences.cpp \
     oauth\oauthdialog.cpp
 
@@ -45,7 +43,8 @@ HEADERS += \
     threading/barrierdata.h \
     threading/barrier.h \
     preferences.h \
-    oauth\oauthdialog.h
+    oauth\oauthdialog.h \
+    threading/mutexdata.h
 
 FORMS += \
         mainwindow.ui \

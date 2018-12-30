@@ -13,8 +13,13 @@ int main(int argc, char *argv[])
 	// Initialize the web engine
 	//QtWebEngine::initialize();
 	
-	MainWindow w;
-	w.show();
+	/*MainWindow w;
+	w.show();*/
+	WebAPI api;
+	api.connectToSpotify();
+	Track track = api.getPlayingTrack();
+	api.connectToGenius();
+	api.getLyrics(track);
 	
 	return a.exec();
 }

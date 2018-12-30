@@ -35,7 +35,7 @@ public:
 	~WebAPI();
 	
 	void connectToSpotify();
-	void getPlayingTrack();
+	Track getPlayingTrack();
 	
 	void connectToGenius();
 	void getLyrics(const Track& track);
@@ -74,6 +74,13 @@ private slots:
 private:
 	O2Spotify* o2_spotify;
 	O2* o2_genius;
+	
+	QEventLoop loopSpotify;
+	QEventLoop loopGenius;
+	QString bufferSpotifyPlayingTrackData;
+	QString bufferGeniusSongInfo;
+	Barrier<QUrl>* barrier_spotifyLink;
+	Barrier<QString>* barrier_spotifyPalyingTrackData;
 	
 	OAuthDialog* webdialog = nullptr;
 	
