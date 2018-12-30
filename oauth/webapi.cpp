@@ -98,11 +98,19 @@ Track WebAPI::getPlayingTrack() {
 	QString name = json["name"].toString("");
 	
 	QJsonArray jsonArtists = json["artists"].toArray();
-	QStringList artists;
-	for (QJsonValue jsonArtist : jsonArtists)
-		artists << jsonArtist.toObject()["name"].toString("");
-	
-	artists.removeAll("");
+	QArtistList artists;
+	for (QJsonValue jsonArtist : jsonArtists) {
+		QString artistName = jsonArtist.toObject()["name"].toString("");
+		QString artistSpotifyUri = jsonArtist.toObject()["uri"].toString("");
+		QString artistSpotifyWebUrl = "";
+		
+		QJsonObject external_urls = json["external_urls"].toObject();
+		if (external_urls.keys().contains("spotify"))
+			artistSpotifyWebUrl = external_urls["spotify"].toString("");
+		
+		if (artistName != "")
+			artists.append(Artist(artistName, artistSpotifyUri, artistSpotifyWebUrl));
+	}
 	
 	QString albumName = json["album"].toObject()["name"].toString("");
 	

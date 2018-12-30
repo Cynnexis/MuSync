@@ -1,7 +1,7 @@
 #include "track.h"
 
 Track::Track(const QString& name,
-			 const QStringList& artists,
+			 const QArtistList& artists,
 			 const QString& albumName,
 			 const QPixmap thumbnail,
 			 const QString& spotifyUri,
@@ -11,7 +11,7 @@ Track::Track(const QString& name,
 }
 
 Track::Track(const QString& name,
-			 const QStringList& artists,
+			 const QArtistList& artists,
 			 const QString& albumName,
 			 const QString thumbnailUrl,
 			 const QString& spotifyUri,
@@ -36,7 +36,7 @@ Track::Track(const Track& track) : QObject(track.parent()) {
 Track::~Track() {}
 
 void Track::init(const QString& name,
-				 const QStringList& artists,
+				 const QArtistList& artists,
 				 const QString& albumName,
 				 const QPixmap thumbnail,
 				 const QString spotifyUri,
@@ -67,11 +67,11 @@ void Track::setName(const QString& value) {
 	emit nameChanged(name);
 }
 
-QStringList Track::getArtists() const {
+QArtistList Track::getArtists() const {
 	return artists;
 }
 
-void Track::setArtists(const QStringList& value) {
+void Track::setArtists(const QArtistList& value) {
 	artists = value;
 	emit artistsChanged(artists);
 }

@@ -36,3 +36,11 @@ QString QArtistList::join() const {
 void QArtistList::sort() {
 	qSort(this->begin(), this->end(), Artist::compare);
 }
+
+bool QArtistList::operator==(const QArtistList& that) const {
+	return this->getStringList() == that.getStringList();
+}
+
+bool QArtistList::operator!=(const QArtistList& that) const {
+	return !(*this == that);
+}

@@ -59,7 +59,7 @@ QString Artist::toString() const {
 /* OPERATORS */
 
 int Artist::compare(const Artist& a1, const Artist& a2) {
-	return Artist::compare(a1, a2, Qt::CaseSensitive);
+	return QString::compare(a1.getName(), a2.getName());
 }
 
 bool Artist::operator==(const Artist& that) const {

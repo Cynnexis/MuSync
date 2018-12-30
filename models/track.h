@@ -19,14 +19,14 @@ class Track : public QObject
 	Q_OBJECT
 public:
 	Track(const QString& name = "",
-		  const QStringList& artists = {},
+		  const QArtistList& artists = {},
 		  const QString& albumName = "",
 		  const QPixmap thumbnail = QPixmap(),
 		  const QString& spotifyUri = "",
 		  const QString& spotifyWebUrl = "",
 		  QObject *parent = nullptr);
 	Track(const QString& name,
-		  const QStringList& artists,
+		  const QArtistList& artists,
 		  const QString& albumName,
 		  const QString thumbnailUrl,
 		  const QString& spotifyUri,
@@ -38,7 +38,7 @@ public:
 	
 private:
 	void init(const QString& name,
-			  const QStringList& artists,
+			  const QArtistList& artists,
 			  const QString& albumName,
 			  const QPixmap thumbnail,
 			  const QString spotifyUri,
@@ -51,8 +51,8 @@ public:
 	QString getName() const;
 	void setName(const QString& value);
 	
-	QStringList getArtists() const;
-	void setArtists(const QStringList& value);
+	QArtistList getArtists() const;
+	void setArtists(const QArtistList& value);
 	
 	QString getAlbumName() const;
 	void setAlbumName(const QString& value);
@@ -78,7 +78,7 @@ public:
 	
 signals:
 	void nameChanged(QString);
-	void artistsChanged(QStringList);
+	void artistsChanged(QArtistList);
 	void albumNameChanged(QString);
 	void thumbnailChanged(QPixmap);
 	void spotifyUriChanged(QString);
@@ -86,7 +86,7 @@ signals:
 	
 private:
 	QString name;
-	QStringList artists;
+	QArtistList artists;
 	QString albumName;
 	QPixmap thumbnail;
 	QString spotifyUri;

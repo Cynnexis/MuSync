@@ -10,6 +10,7 @@
 
 #include "oauth/webapi.h"
 #include "oauth/oauthdialog.h"
+#include "models/qartistlist.h"
 #include "preferences.h"
 
 using namespace std;
@@ -35,7 +36,7 @@ private slots:
 	void getLyrics(QString lyrics);
 	
 	void onTrackNameChanged(QString name);
-	void onTrackArtistsChanged(QStringList artists);
+	void onTrackArtistsChanged(QArtistList artists);
 	void onTrackAlbumName(QString albumName);
 	void onTrackThumbnailChanged(QPixmap thumbnail);
 	

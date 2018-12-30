@@ -20,6 +20,9 @@ public:
 	QString join() const;
 	
 	void sort();
+	
+	bool operator==(const QArtistList& that) const;
+	bool operator!=(const QArtistList& that) const;
 };
 
 #endif // QARTISTLIST_H
