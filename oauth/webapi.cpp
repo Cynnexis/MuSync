@@ -2,7 +2,7 @@
 
 WebAPI::WebAPI(QObject *parent) : QObject(parent) {
 	// Get the spotify API
-	o2_spotify = new O2Spotify(this);
+	o2_spotify = new O2Spotify();
 #ifndef QT_DEBUG
 	o2_spotify->setIgnoreSslErrors(true);
 #endif
@@ -22,7 +22,7 @@ WebAPI::WebAPI(QObject *parent) : QObject(parent) {
 	o2_spotify->setLocalPort(6814);
 	
 	// Get the genius API
-	o2_genius = new O2(this);
+	o2_genius = new O2();
 #ifndef QT_DEBUG
 	o2_genius->setIgnoreSslErrors(true);
 #endif
@@ -70,8 +70,8 @@ Track WebAPI::getPlayingTrack() {
 #endif
 	
 	QNetworkRequest request = QNetworkRequest(QUrl("https://api.spotify.com/v1/me/player/currently-playing"));
-	QNetworkAccessManager *mgr = new QNetworkAccessManager(this);
-	O2Requestor *requestor = new O2Requestor(mgr, o2_spotify, this);
+	QNetworkAccessManager *mgr = new QNetworkAccessManager();
+	O2Requestor *requestor = new O2Requestor(mgr, o2_spotify);
 	connect(requestor, SIGNAL(finished(int, QNetworkReply::NetworkError, QByteArray)), this, SLOT(onRequestFinished(int, QNetworkReply::NetworkError, QByteArray)));
 	requestSpotifyPlayingTrackId = requestor->get(request);
 	loopSpotify.exec();
@@ -108,7 +108,7 @@ Track WebAPI::getPlayingTrack() {
 	if (thumbnails.size() > 0)
 		thumbnailUrl = thumbnails[0].toObject()["url"].toString(thumbnailUrl);
 	
-	Track track = Track(name, artists, albumName, thumbnailUrl, false, this);
+	Track track = Track(name, artists, albumName, thumbnailUrl, false);
 	
 #ifdef QT_DEBUG
 	cout << "Spotify> " << track.toString().toStdString() << endl;
@@ -150,8 +150,8 @@ QString WebAPI::getLyrics(const Track& track) {
 #endif
 	
 	QNetworkRequest request = QNetworkRequest(QUrl("https://api.genius.com/search?q=" + QUrl::toPercentEncoding(track.getName() + " " + track.getArtists().join(","))));
-	QNetworkAccessManager *mgr = new QNetworkAccessManager(this);
-	O2Requestor *requestor = new O2Requestor(mgr, o2_genius, this);
+	QNetworkAccessManager *mgr = new QNetworkAccessManager();
+	O2Requestor *requestor = new O2Requestor(mgr, o2_genius);
 	connect(requestor, SIGNAL(finished(int, QNetworkReply::NetworkError, QByteArray)), this, SLOT(onRequestFinished(int, QNetworkReply::NetworkError, QByteArray)));	
 	requestGeniusSongInfoId = requestor->get(request);
 	loopGenius.exec();
@@ -192,7 +192,7 @@ QString WebAPI::getLyrics(const Track& track) {
 		if (firstResultPath != "") {
 			// Fetch the HTML page containing the lyrics
 			QNetworkRequest request = QNetworkRequest(QUrl("https://genius.com" + firstResultPath));
-			QNetworkAccessManager* mgr = new QNetworkAccessManager(this);
+			QNetworkAccessManager* mgr = new QNetworkAccessManager();
 			QNetworkReply* response = mgr->get(request);
 			QEventLoop event;
 			connect(response, SIGNAL(finished()), &event, SLOT(quit()));	
@@ -278,11 +278,6 @@ void WebAPI::onSpotifyOpenBrowser(const QUrl& url) {
 #ifdef QT_DEBUG
 	cout << "Spotify> Openning " << url.toString().toStdString() << endl;
 #endif
-	/*if (webdialog == nullptr) {
-		webdialog = new OAuthDialog();
-	}
-	webdialog->load(url);
-	webdialog->show();*/
 	//QDesktopServices::openUrl(url);
 	emit spotifyOpenBrowser(url);
 }
@@ -291,8 +286,6 @@ void WebAPI::onSpotifyCloseBrowser() {
 #ifdef QT_DEBUG
 	cout << "Spotify> You may close the browser." << endl;
 #endif
-	/*if (webdialog == nullptr && webdialog->isVisible())
-		webdialog->close();*/
 	emit spotifyCloseBrowser();
 }
 

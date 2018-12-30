@@ -26,15 +26,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(api, SIGNAL(geniusLinkingSucceeded()), this, SLOT(requestCloseBrowser()));
 	connect(api, SIGNAL(geniusLinkingFailed()), this, SLOT(requestCloseBrowser()));
 	
-	// Connect the API in another thread
-	timerRefresh = new QTimer(nullptr);
-	timerRefresh->setSingleShot(true);
-	threadAPIs = new QThread(this);
-	//api->moveToThread(threadAPIs);
-	connect(this, SIGNAL(destroyed()), threadAPIs, SLOT(deleteLater()));
-	//threadAPIs->start();
-	connectAPIs();
-	
 	// Connect `currentTrack` to slots
 	connect(&currentTrack, SIGNAL(nameChanged(QString)), this, SLOT(onTrackNameChanged(QString)));
 	connect(&currentTrack, SIGNAL(artistsChanged(QStringList)), this, SLOT(onTrackArtistsChanged(QStringList)));
@@ -162,15 +153,20 @@ void MainWindow::requestCloseBrowser() {
 	if (webdialog != nullptr) {
 		webdialog->close();
 		webdialog->hide();
-		//delete webdialog;
 	}
 }
 
 void MainWindow::showEvent(QShowEvent* event) {
 	QMainWindow::showEvent(event);
 	
-	/*dialog = new OAuthDialog(QUrl("https://www.google.com/"), this);
-	dialog->show();*/
+	// Connect the API in another thread
+	timerRefresh = new QTimer(nullptr);
+	timerRefresh->setSingleShot(true);
+	threadAPIs = new QThread(this);
+	api->moveToThread(threadAPIs);
+	connect(this, SIGNAL(destroyed()), threadAPIs, SLOT(deleteLater()));
+	threadAPIs->start();
+	connectAPIs();
 }
 
 void MainWindow::on_actionRefresh_triggered() {
