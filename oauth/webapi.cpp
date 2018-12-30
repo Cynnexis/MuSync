@@ -85,6 +85,10 @@ Track WebAPI::getPlayingTrack() {
 		return Track();
 	}
 	
+#ifdef QT_DEBUG
+	//cout << "Spotify> " << bufferSpotifyPlayingTrackData.toStdString() << endl;
+#endif
+	
 	QJsonDocument doc = QJsonDocument::fromJson(bufferSpotifyPlayingTrackData.toUtf8());
 	QJsonObject json = doc.object();
 	
@@ -108,7 +112,21 @@ Track WebAPI::getPlayingTrack() {
 	if (thumbnails.size() > 0)
 		thumbnailUrl = thumbnails[0].toObject()["url"].toString(thumbnailUrl);
 	
-	Track track = Track(name, artists, albumName, thumbnailUrl, false);
+	QString spotifyUri = json["uri"].toString("");
+	
+	QString spotifyWebUrl = "";
+	QJsonObject external_urls = json["external_urls"].toObject();
+	
+	if (external_urls.keys().contains("spotify"))
+		spotifyWebUrl = external_urls["spotify"].toString("");
+	
+	Track track = Track(name,
+						artists,
+						albumName,
+						thumbnailUrl,
+						spotifyUri,
+						spotifyWebUrl,
+						false);
 	
 #ifdef QT_DEBUG
 	cout << "Spotify> " << track.toString().toStdString() << endl;
