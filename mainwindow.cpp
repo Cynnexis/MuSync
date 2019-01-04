@@ -96,9 +96,14 @@ void MainWindow::onTrackArtistsChanged(QArtistList artists) {
 	ui->menuArtists->clear();
 	
 	for (Artist artist : artists) {
-		QAction* a = ui->menuArtists->addAction(artist.getName());
+		QMenu* m = ui->menuArtists->addMenu(artist.getName());
+		QAction* aApp = m->addAction("Open on Spotify App");
+		QAction* aWeb = m->addAction("Open on Spotify Web");
 		// Lambda functions: https://medium.com/genymobile/how-c-lambda-expressions-can-improve-your-qt-code-8cd524f4ed9f
-		connect(a, &QAction::triggered, [=]() {
+		connect(aApp, &QAction::triggered, [=]() {
+			QDesktopServices::openUrl(QUrl(artist.getSpotifyUri()));
+		});
+		connect(aWeb, &QAction::triggered, [=]() {
 			QDesktopServices::openUrl(QUrl(artist.getSpotifyWebUrl()));
 		});
 	}
