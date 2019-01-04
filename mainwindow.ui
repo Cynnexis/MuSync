@@ -149,6 +149,9 @@
      <string>Spotify</string>
     </property>
     <widget class="QMenu" name="menuAlbum">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="title">
       <string>Album</string>
      </property>
@@ -156,22 +159,38 @@
      <addaction name="actionOpenAlbumOnSpotifyWeb"/>
     </widget>
     <widget class="QMenu" name="menuTrack">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="title">
       <string>Track</string>
      </property>
      <addaction name="actionOpenTrackOnSpotifyApp"/>
      <addaction name="actionOpenTrackOnSpotifyWeb"/>
     </widget>
+    <widget class="QMenu" name="menuArtists">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="title">
+      <string>Artists</string>
+     </property>
+     <addaction name="separator"/>
+    </widget>
     <addaction name="menuTrack"/>
+    <addaction name="menuArtists"/>
     <addaction name="menuAlbum"/>
    </widget>
-   <widget class="QMenu" name="menuHelp">
+   <widget class="QMenu" name="menuGenius">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="title">
      <string>Genius</string>
     </property>
     <addaction name="actionOpenLyricsOnGenius"/>
    </widget>
-   <widget class="QMenu" name="menuHelp_2">
+   <widget class="QMenu" name="menuHelp">
     <property name="title">
      <string>Help</string>
     </property>
@@ -180,8 +199,8 @@
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuOptions"/>
+   <addaction name="menuGenius"/>
    <addaction name="menuHelp"/>
-   <addaction name="menuHelp_2"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">

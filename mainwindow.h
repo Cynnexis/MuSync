@@ -8,10 +8,12 @@
 #include <QtConcurrent>
 #include <QFuture>
 #include <QMessageBox>
+#include <QAction>
 
 #include "oauth/webapi.h"
 #include "oauth/oauthdialog.h"
 #include "models/qartistlist.h"
+#include "models/artist.h"
 #include "preferences.h"
 
 using namespace std;
@@ -42,7 +44,6 @@ private slots:
 	void onTrackThumbnailChanged(QPixmap thumbnail);
 	
 	void onLyricsLyricsChanged(QString lyrics);
-	void onLyricsGeniusUrlChanged(QString url);
 	
 	void connectAPIs();
 	

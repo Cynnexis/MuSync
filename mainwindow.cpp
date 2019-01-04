@@ -37,7 +37,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	
 	// Connect `currentLyrics` to slots
 	connect(&currentLyrics, SIGNAL(lyricsChanged(QString)), this, SLOT(onLyricsLyricsChanged(QString)));
-	connect(&currentLyrics, SIGNAL(geniusUrlChanged(QString)), this, SLOT(onLyricsGeniusUrlChanged(QString)));
 }
 
 MainWindow::~MainWindow() {
@@ -84,16 +83,32 @@ void MainWindow::getLyrics(Lyrics lyrics) {
 void MainWindow::onTrackNameChanged(QString name) {
 	ui->lb_title->setText(name);
 	changeTitle(currentTrack);
+	
+	ui->menuTrack->setEnabled(true);
 }
 
 void MainWindow::onTrackArtistsChanged(QArtistList artists) {
 	ui->lb_artists->setText(artists.join());
 	changeTitle(currentTrack);
+	
+	// Update the links
+	ui->menuArtists->setEnabled(true);
+	ui->menuArtists->clear();
+	
+	for (Artist artist : artists) {
+		QAction* a = ui->menuArtists->addAction(artist.getName());
+		// Lambda functions: https://medium.com/genymobile/how-c-lambda-expressions-can-improve-your-qt-code-8cd524f4ed9f
+		connect(a, &QAction::triggered, [=]() {
+			QDesktopServices::openUrl(QUrl(artist.getSpotifyWebUrl()));
+		});
+	}
 }
 
 void MainWindow::onTrackAlbumChanged(Album album) {
 	ui->lb_album->setText(album.getName());
 	changeTitle(currentTrack);
+	
+	ui->menuAlbum->setEnabled(true);
 }
 
 void MainWindow::onTrackThumbnailChanged(QPixmap thumbnail) {
@@ -105,11 +120,11 @@ void MainWindow::onTrackThumbnailChanged(QPixmap thumbnail) {
 
 void MainWindow::onLyricsLyricsChanged(QString lyrics) {
 	ui->actionRefresh->setEnabled(true);
-	if (ui->te_lyrics->toPlainText() != lyrics)
+	if (ui->te_lyrics->toPlainText() != lyrics) {
 		ui->te_lyrics->setText(lyrics);
+		ui->menuGenius->setEnabled(true);
+	}
 }
-
-void MainWindow::onLyricsGeniusUrlChanged(QString url) {}
 
 void MainWindow::connectAPIs() {
 #ifdef QT_DEBUG
