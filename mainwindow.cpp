@@ -76,6 +76,7 @@ void MainWindow::getTrack(Track track) {
 }
 
 void MainWindow::getLyrics(Lyrics lyrics) {
+	ui->actionRefresh->setEnabled(true);
 	if (lyrics.getLyrics() != "" && currentLyrics != lyrics)
 		currentLyrics = lyrics;
 }
@@ -124,7 +125,6 @@ void MainWindow::onTrackThumbnailChanged(QPixmap thumbnail) {
 }
 
 void MainWindow::onLyricsLyricsChanged(QString lyrics) {
-	ui->actionRefresh->setEnabled(true);
 	if (ui->te_lyrics->toPlainText() != lyrics) {
 		ui->te_lyrics->setText(lyrics);
 		ui->menuGenius->setEnabled(true);
