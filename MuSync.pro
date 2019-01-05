@@ -40,7 +40,8 @@ SOURCES += \
     models/album.cpp \
     models/lyrics.cpp \
     r.cpp \
-    threading/autorefreshapi.cpp
+    threading/autorefreshapi.cpp \
+    ui/dsettings.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -56,11 +57,13 @@ HEADERS += \
     models/album.h \
     models/lyrics.h \
     r.h \
-    threading/autorefreshapi.h
+    threading/autorefreshapi.h \
+    ui/dsettings.h
 
 FORMS += \
         mainwindow.ui \
-    oauth/oauthdialog.ui
+    oauth/oauthdialog.ui \
+    ui/dsettings.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
