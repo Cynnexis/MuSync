@@ -5,4 +5,12 @@
         <file alias="genius-client-id">res/texts/genius-client-id.txt</file>
         <file alias="genius-client-secret">res/texts/genius-client-secret.txt</file>
     </qresource>
+    <qresource prefix="/svg">
+        <file alias="refresh">res/svg/refresh.svg</file>
+        <file alias="musync">res/svg/musync.svg</file>
+        <file alias="qt">res/svg/qt.svg</file>
+        <file alias="genius">res/svg/genius.svg</file>
+        <file alias="genius-cropped">res/svg/genius-cropped.svg</file>
+        <file alias="spotify">res/svg/spotify.svg</file>
+    </qresource>
 </RCC>

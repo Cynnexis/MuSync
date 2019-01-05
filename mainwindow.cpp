@@ -9,9 +9,13 @@ MainWindow::MainWindow(QWidget *parent) :
 	changeTitle();
 	
 	pref = Preferences::getInstance(this);
+	R::getInstance(this);
 	
 	// Change the the name of "File" menu to the application name
 	ui->menuFile->setTitle(qApp->applicationName());
+	
+	// Add some icons
+	ui->actionRefresh->setIcon(R::getInstance()->getRefresh());
 	
 	ui->lb_title->addActions({ui->actionOpenTrackOnSpotifyApp, ui->actionOpenTrackOnSpotifyWeb});
 	ui->lb_album->addActions({ui->actionOpenAlbumOnSpotifyApp, ui->actionOpenAlbumOnSpotifyWeb});
@@ -217,7 +221,7 @@ void MainWindow::on_actionOpenLyricsOnGenius_triggered() {
 }
 
 void MainWindow::on_actionAboutMuSync_triggered() {
-    QMessageBox::about(this, "About MuSync...", "MuSync is a Qt base application that fetch the lyrics of your current song on Spotify.");
+    QMessageBox::about(this, "About MuSync...", "MuSync is a Qt base application that fetch the lyrics of your current song on Spotify. This application use Material Design Icons from Google.");
 }
 
 void MainWindow::on_actionAboutQt_triggered() {

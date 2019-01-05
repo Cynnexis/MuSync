@@ -23,6 +23,7 @@
 #include "models/lyrics.h"
 #include "threading/barrier.h"
 #include "oauth/oauthdialog.h"
+#include "r.h"
 
 using namespace std;
 
@@ -82,8 +83,6 @@ private:
 	QString bufferGeniusSongInfo;
 	
 	OAuthDialog* webdialog = nullptr;
-	
-	QString getCode(const QString& filename) const;
 	
 	int requestSpotifyPlayingTrackId;
 	int requestGeniusSongInfoId;

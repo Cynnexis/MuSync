@@ -15,6 +15,7 @@
 #include "models/qartistlist.h"
 #include "models/artist.h"
 #include "preferences.h"
+#include "r.h"
 
 using namespace std;
 
