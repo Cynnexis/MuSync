@@ -39,7 +39,8 @@ SOURCES += \
     models/qartistlist.cpp \
     models/album.cpp \
     models/lyrics.cpp \
-    r.cpp
+    r.cpp \
+    threading/autorefreshapi.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -54,7 +55,8 @@ HEADERS += \
     models/qartistlist.h \
     models/album.h \
     models/lyrics.h \
-    r.h
+    r.h \
+    threading/autorefreshapi.h
 
 FORMS += \
         mainwindow.ui \

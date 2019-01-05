@@ -22,18 +22,26 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->lb_title->addActions({ui->actionOpenTrackOnSpotifyApp, ui->actionOpenTrackOnSpotifyWeb});
 	ui->lb_album->addActions({ui->actionOpenAlbumOnSpotifyApp, ui->actionOpenAlbumOnSpotifyWeb});
 	
-	api = new WebAPI();
+	//api = new WebAPI();
+	threadAPIs = new QThread(this);
+	refreshAPIs = new AutoRefreshAPI();
 	
-	connect(api, SIGNAL(spotifyPlayingTrackFetched(Track)), this, SLOT(getTrack(Track)));
-	connect(api, SIGNAL(geniusLyricsFetched(Lyrics)), this, SLOT(getLyrics(Lyrics)));
-	connect(api, SIGNAL(spotifyOpenBrowser(QUrl)), this, SLOT(requestOpenBrowser(QUrl)));
-	connect(api, SIGNAL(spotifyCloseBrowser()), this, SLOT(requestCloseBrowser()));
-	connect(api, SIGNAL(spotifyLinkingFailed()), this, SLOT(requestCloseBrowser()));
-	connect(api, SIGNAL(spotifyLinkingSucceeded()), this, SLOT(requestCloseBrowser()));
-	connect(api, SIGNAL(geniusOpenBrowser(QUrl)), this, SLOT(requestOpenBrowser(QUrl)));
-	connect(api, SIGNAL(geniusCloseBrowser()), this, SLOT(requestCloseBrowser()));
-	connect(api, SIGNAL(geniusLinkingSucceeded()), this, SLOT(requestCloseBrowser()));
-	connect(api, SIGNAL(geniusLinkingFailed()), this, SLOT(requestCloseBrowser()));
+	refreshAPIs->moveToThread(threadAPIs);
+	connect(threadAPIs, &QThread::started, refreshAPIs, &AutoRefreshAPI::run);
+	
+	connect(refreshAPIs, SIGNAL(spotifyPlayingTrackFetched(Track)), this, SLOT(getTrack(Track)));
+	connect(refreshAPIs, SIGNAL(geniusLyricsFetched(Lyrics)), this, SLOT(getLyrics(Lyrics)));
+	connect(refreshAPIs, SIGNAL(spotifyOpenBrowser(QUrl)), this, SLOT(requestOpenBrowser(QUrl)));
+	connect(refreshAPIs, SIGNAL(spotifyCloseBrowser()), this, SLOT(requestCloseBrowser()));
+	connect(refreshAPIs, SIGNAL(spotifyLinkingFailed()), this, SLOT(requestCloseBrowser()));
+	connect(refreshAPIs, SIGNAL(spotifyLinkingSucceeded()), this, SLOT(requestCloseBrowser()));
+	connect(refreshAPIs, SIGNAL(geniusOpenBrowser(QUrl)), this, SLOT(requestOpenBrowser(QUrl)));
+	connect(refreshAPIs, SIGNAL(geniusCloseBrowser()), this, SLOT(requestCloseBrowser()));
+	connect(refreshAPIs, SIGNAL(geniusLinkingSucceeded()), this, SLOT(requestCloseBrowser()));
+	connect(refreshAPIs, SIGNAL(geniusLinkingFailed()), this, SLOT(requestCloseBrowser()));
+	
+	connect(refreshAPIs, SIGNAL(APIsConnected()), this, SLOT(onAPIsConnected()));
+	connect(refreshAPIs, SIGNAL(aboutToRefresh()), this, SLOT(onAboutToRefresh()));
 	
 	// Connect `currentTrack` to slots
 	connect(&currentTrack, SIGNAL(nameChanged(QString)), this, SLOT(onTrackNameChanged(QString)));
@@ -47,8 +55,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow() {
 	// Stop thread
-	if (threadAPIs != nullptr && threadAPIs->isRunning()) {
+	/*if (threadAPIs != nullptr && threadAPIs->isRunning()) {
 		timerRefresh->stop();
+		threadAPIs->exit();
+	}*/
+	if (refreshAPIs != nullptr && threadAPIs != nullptr && threadAPIs->isRunning()) {
+		refreshAPIs->stop();
 		threadAPIs->exit();
 	}
 	
@@ -137,7 +149,7 @@ void MainWindow::onLyricsLyricsChanged(QString lyrics) {
 	}
 }
 
-void MainWindow::connectAPIs() {
+/*void MainWindow::connectAPIs() {
 #ifdef QT_DEBUG
 	cout << "MainWindow> Connecting to APIs..." << endl;
 #endif
@@ -164,7 +176,7 @@ void MainWindow::refresh() {
 		api->getLyrics();
 		timerRefresh->start(pref->getRefreshTimeout());
 	}
-}
+}*/
 
 void MainWindow::requestOpenBrowser(const QUrl& url) {	
 	if (webdialog == nullptr)
@@ -184,17 +196,34 @@ void MainWindow::showEvent(QShowEvent* event) {
 	QMainWindow::showEvent(event);
 	
 	// Connect the API in another thread
-	timerRefresh = new QTimer(nullptr);
+	/*timerRefresh = new QTimer(nullptr);
 	timerRefresh->setSingleShot(true);
 	threadAPIs = new QThread(this);
 	api->moveToThread(threadAPIs);
 	connect(this, SIGNAL(destroyed()), threadAPIs, SLOT(deleteLater()));
 	threadAPIs->start();
-	connectAPIs();
+	connectAPIs();*/
+	threadAPIs->start();
+	//refreshAPIs->start();
+}
+
+void MainWindow::onAPIsConnected() {
+#ifdef QT_DEBUG
+	cout << "MainWindow> APIs connected" << endl;
+#endif
+	ui->actionRefresh->setEnabled(true);
+}
+
+void MainWindow::onAboutToRefresh() {
+#ifdef QT_DEBUG
+	cout << "MainWindow> About to refresh" << endl;
+#endif
+	ui->actionRefresh->setEnabled(false);
 }
 
 void MainWindow::on_actionRefresh_triggered() {
-    refresh();
+    //refresh();
+	ui->statusBar->showMessage("Err... not now, it's not a good moment...", 5000);
 }
 
 void MainWindow::on_actionExit_triggered() {

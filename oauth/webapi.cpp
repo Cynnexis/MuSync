@@ -1,6 +1,14 @@
 #include "webapi.h"
 
 WebAPI::WebAPI(QObject *parent) : QObject(parent) {
+}
+
+WebAPI::~WebAPI() {
+	if (webdialog != nullptr)
+		delete webdialog;
+}
+
+void WebAPI::connectToSpotify() {
 	// Get the spotify API
 	o2_spotify = new O2Spotify();
 #ifndef QT_DEBUG
@@ -19,31 +27,6 @@ WebAPI::WebAPI(QObject *parent) : QObject(parent) {
 	o2_spotify->setScope("user-read-currently-playing");
 	o2_spotify->setLocalPort(6814);
 	
-	// Get the genius API
-	o2_genius = new O2();
-#ifndef QT_DEBUG
-	o2_genius->setIgnoreSslErrors(true);
-#endif
-	connect(o2_genius, SIGNAL(linkedChanged()), this, SLOT(onGeniusLinkedChanged()));
-	connect(o2_genius, SIGNAL(linkingSucceeded()), this, SLOT(onGeniusLinkingSucceeded()));
-	connect(o2_genius, SIGNAL(linkingFailed()), this, SLOT(onGeniusLinkingFailed()));
-	connect(o2_genius, SIGNAL(openBrowser(QUrl)), this, SLOT(onGeniusOpenBrowser(QUrl)));
-	connect(o2_genius, SIGNAL(closeBrowser()), this, SLOT(onGeniusCloseBrowser()));
-	
-	o2_genius->setClientId(R::getGeniusClientId());
-	o2_genius->setClientSecret(R::getGeniusClientSecret());
-	o2_genius->setRequestUrl("https://api.genius.com/oauth/authorize");
-	o2_genius->setTokenUrl("https://api.genius.com/oauth/token");
-	o2_genius->setRefreshTokenUrl("https://api.genius.com/oauth/token");
-	o2_genius->setLocalPort(6815);
-}
-
-WebAPI::~WebAPI() {
-	if (webdialog != nullptr)
-		delete webdialog;
-}
-
-void WebAPI::connectToSpotify() {
 	o2_spotify->link();
 	
 	if (!o2_spotify->linked())
@@ -188,7 +171,25 @@ Track WebAPI::getPlayingTrack() {
 	return track;
 }
 
-void WebAPI::connectToGenius() {	
+void WebAPI::connectToGenius() {
+	// Get the genius API
+	o2_genius = new O2();
+#ifndef QT_DEBUG
+	o2_genius->setIgnoreSslErrors(true);
+#endif
+	connect(o2_genius, SIGNAL(linkedChanged()), this, SLOT(onGeniusLinkedChanged()));
+	connect(o2_genius, SIGNAL(linkingSucceeded()), this, SLOT(onGeniusLinkingSucceeded()));
+	connect(o2_genius, SIGNAL(linkingFailed()), this, SLOT(onGeniusLinkingFailed()));
+	connect(o2_genius, SIGNAL(openBrowser(QUrl)), this, SLOT(onGeniusOpenBrowser(QUrl)));
+	connect(o2_genius, SIGNAL(closeBrowser()), this, SLOT(onGeniusCloseBrowser()));
+	
+	o2_genius->setClientId(R::getGeniusClientId());
+	o2_genius->setClientSecret(R::getGeniusClientSecret());
+	o2_genius->setRequestUrl("https://api.genius.com/oauth/authorize");
+	o2_genius->setTokenUrl("https://api.genius.com/oauth/token");
+	o2_genius->setRefreshTokenUrl("https://api.genius.com/oauth/token");
+	o2_genius->setLocalPort(6815);
+	
 	o2_genius->link();
 	
 	if (!o2_genius->linked())
