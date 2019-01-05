@@ -6,6 +6,12 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui(new Ui::MainWindow) {
 	ui->setupUi(this);
 	
+	qRegisterMetaType<Track>("Track");
+	qRegisterMetaType<Album>("Album");
+	qRegisterMetaType<Artist>("Artist");
+	qRegisterMetaType<Lyrics>("Lyrics");
+	qRegisterMetaType<QArtistList>("QArtistList");
+	
 	changeTitle();
 	
 	pref = Preferences::getInstance(this);
@@ -27,7 +33,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	refreshAPIs = new AutoRefreshAPI();
 	
 	refreshAPIs->moveToThread(threadAPIs);
-	connect(threadAPIs, &QThread::started, refreshAPIs, &AutoRefreshAPI::run);
+	connect(threadAPIs, &QThread::started, refreshAPIs, &AutoRefreshAPI::refresh);
+	connect(threadAPIs, &QThread::finished, [=]() {refreshAPIs->stop(); refreshAPIs->deleteLater();});
 	
 	connect(refreshAPIs, SIGNAL(spotifyPlayingTrackFetched(Track)), this, SLOT(getTrack(Track)));
 	connect(refreshAPIs, SIGNAL(geniusLyricsFetched(Lyrics)), this, SLOT(getLyrics(Lyrics)));
@@ -54,15 +61,12 @@ MainWindow::MainWindow(QWidget *parent) :
 }
 
 MainWindow::~MainWindow() {
-	// Stop thread
-	/*if (threadAPIs != nullptr && threadAPIs->isRunning()) {
-		timerRefresh->stop();
-		threadAPIs->exit();
-	}*/
-	if (refreshAPIs != nullptr && threadAPIs != nullptr && threadAPIs->isRunning()) {
+	// Stop background thread
+	if (refreshAPIs != nullptr)
 		refreshAPIs->stop();
+	
+	if (threadAPIs != nullptr && threadAPIs->isRunning())
 		threadAPIs->exit();
-	}
 	
 	// Delete graphic elements
 	delete ui;
@@ -89,7 +93,6 @@ void MainWindow::getTrack(Track track) {
 	if (track.getName() != "" && currentTrack != track) {
 		currentTrack = track;
 		currentTrack.downloadThumbnail();
-		//changeTitle(currentTrack);
 	}
 }
 
@@ -149,35 +152,6 @@ void MainWindow::onLyricsLyricsChanged(QString lyrics) {
 	}
 }
 
-/*void MainWindow::connectAPIs() {
-#ifdef QT_DEBUG
-	cout << "MainWindow> Connecting to APIs..." << endl;
-#endif
-	
-	api->connectToSpotify();
-	api->connectToGenius();
-	
-#ifdef QT_DEBUG
-	cout << "MainWindow> APIs connected." << endl;
-#endif
-	
-	timerRefresh->setSingleShot(true);
-	connect(timerRefresh, SIGNAL(timeout()), this, SLOT(refresh()));
-	timerRefresh->start(1000);
-	
-	ui->actionRefresh->setEnabled(true);
-}
-
-void MainWindow::refresh() {
-	if (timerRefresh != nullptr) {
-		cout << "MainWindow> Refreshing..." << endl;
-		timerRefresh->stop();
-		ui->actionRefresh->setEnabled(false);
-		api->getLyrics();
-		timerRefresh->start(pref->getRefreshTimeout());
-	}
-}*/
-
 void MainWindow::requestOpenBrowser(const QUrl& url) {	
 	if (webdialog == nullptr)
 		webdialog = new OAuthDialog(this);
@@ -195,16 +169,7 @@ void MainWindow::requestCloseBrowser() {
 void MainWindow::showEvent(QShowEvent* event) {
 	QMainWindow::showEvent(event);
 	
-	// Connect the API in another thread
-	/*timerRefresh = new QTimer(nullptr);
-	timerRefresh->setSingleShot(true);
-	threadAPIs = new QThread(this);
-	api->moveToThread(threadAPIs);
-	connect(this, SIGNAL(destroyed()), threadAPIs, SLOT(deleteLater()));
 	threadAPIs->start();
-	connectAPIs();*/
-	threadAPIs->start();
-	//refreshAPIs->start();
 }
 
 void MainWindow::onAPIsConnected() {
@@ -222,7 +187,7 @@ void MainWindow::onAboutToRefresh() {
 }
 
 void MainWindow::on_actionRefresh_triggered() {
-    //refresh();
+    //refreshAPIs->refresh();
 	ui->statusBar->showMessage("Err... not now, it's not a good moment...", 5000);
 }
 

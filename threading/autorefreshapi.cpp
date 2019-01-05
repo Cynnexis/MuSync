@@ -21,7 +21,7 @@ AutoRefreshAPI::AutoRefreshAPI(QObject* parent) : QObject(parent) {
 	connect(api, SIGNAL(geniusLyricsFetched(Lyrics)), this, SIGNAL(geniusLyricsFetched(Lyrics)));
 }
 
-void AutoRefreshAPI::run() {
+void AutoRefreshAPI::refresh() {
 	if (t_refresh == nullptr) {
 #ifdef QT_DEBUG
 		cout << "AutoRefreshAPI> Connecting to APIs..." << endl;
@@ -32,7 +32,7 @@ void AutoRefreshAPI::run() {
 		
 		t_refresh = new QTimer(this);
 		t_refresh->setSingleShot(true);
-		connect(t_refresh, SIGNAL(timeout()), this, SLOT(run()));
+		connect(t_refresh, SIGNAL(timeout()), this, SLOT(refresh()));
 		t_refresh->start(pref->getRefreshTimeout());
 		
 #ifdef QT_DEBUG
@@ -54,14 +54,16 @@ void AutoRefreshAPI::run() {
 }
 
 void AutoRefreshAPI::pause() {
-	paused = true;
+	if (t_refresh != nullptr)
+		t_refresh->stop();
 }
 
 void AutoRefreshAPI::resume() {
-	paused = false;
+	if (t_refresh != nullptr)
+		t_refresh->start(0);
 }
 
 void AutoRefreshAPI::stop() {
-	continueThread = false;
-	t_refresh->stop();
+	if (t_refresh != nullptr)
+		t_refresh->stop();
 }

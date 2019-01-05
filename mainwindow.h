@@ -79,12 +79,10 @@ private:
 	Preferences* pref = nullptr;
 	OAuthDialog* webdialog = nullptr;
 	
-	//WebAPI* api = nullptr;
 	AutoRefreshAPI* refreshAPIs;
 	QThread* threadAPIs;
 	Track currentTrack;
 	Lyrics currentLyrics;
-	//QTimer* timerRefresh = nullptr;
 };
 
 #endif // MAINWINDOW_H

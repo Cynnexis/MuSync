@@ -19,7 +19,7 @@ public:
 	AutoRefreshAPI(QObject* parent = nullptr);
 	
 public slots:
-	void run();
+	void refresh();
 	
 	void pause();
 	void resume();
@@ -48,8 +48,6 @@ signals:
 private:
 	WebAPI* api = nullptr;
 	QTimer* t_refresh = nullptr;
-	bool continueThread = true;
-	bool paused = false;
 	
 	Preferences* pref;
 };
