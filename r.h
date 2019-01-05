@@ -62,6 +62,14 @@ namespace R
 	QPixmap getPower();
 	QPixmap getPower(const QColor& tint);
 	
+	QString getUpPath();
+	QPixmap getUp();
+	QPixmap getUp(const QColor& tint);
+	
+	QString getDownPath();
+	QPixmap getDown();
+	QPixmap getDown(const QColor& tint);
+	
 	QPixmap getSvg(const QString& path);
 	QPixmap getSvg(const QString& path, const QColor& tint);
 	

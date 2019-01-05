@@ -36,6 +36,10 @@ QColor R::getPrimaryColor() {
 	return QColor(251, 166, 10, 255); // #FBA60A
 }
 
+QColor R::getSpotifyColor() {
+	return QColor(30, 215, 96); // #1ED760
+}
+
 QString R::getMuSyncIconPath() {
 	return ":/svg/musync";
 }
@@ -124,6 +128,30 @@ QPixmap R::getPower(const QColor& tint) {
 	return getSvg(getPowerPath(), tint);
 }
 
+QString R::getUpPath() {
+	return ":/svg/up";
+}
+
+QPixmap R::getUp() {
+	return getSvg(getUpPath(), getPrimaryColor());
+}
+
+QPixmap R::getUp(const QColor& tint) {
+	return getSvg(getUpPath(), tint);
+}
+
+QString R::getDownPath() {
+	return ":/svg/down";
+}
+
+QPixmap R::getDown() {
+	return getSvg(getDownPath(), getPrimaryColor());
+}
+
+QPixmap R::getDown(const QColor& tint) {
+	return getSvg(getDownPath(), tint);
+}
+
 QPixmap R::getSvg(const QString& path) {
 	return QPixmap(path);
 }
@@ -178,8 +206,4 @@ void R::setAttrRec(QDomElement& elem, const QString& tagName, const QString& att
 		QDomElement childElem = child.toElement();
 		setAttrRec(childElem, tagName, attr, value);
 	}
-}
-
-QColor R::getSpotifyColor() {
-	return QColor(30, 215, 96);
 }

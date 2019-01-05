@@ -15,5 +15,7 @@
         <file alias="browser">res/svg/browser.svg</file>
         <file alias="power">res/svg/power.svg</file>
         <file alias="settings">res/svg/settings.svg</file>
+        <file alias="down">res/svg/down.svg</file>
+        <file alias="up">res/svg/up.svg</file>
     </qresource>
 </RCC>
