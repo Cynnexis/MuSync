@@ -35,6 +35,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	refreshAPIs->moveToThread(threadAPIs);
 	connect(threadAPIs, &QThread::started, refreshAPIs, &AutoRefreshAPI::refresh);
 	connect(threadAPIs, &QThread::finished, [=]() {refreshAPIs->stop(); refreshAPIs->deleteLater();});
+	connect(ui->actionRefresh, SIGNAL(triggered()), refreshAPIs, SLOT(refresh()));
 	
 	connect(refreshAPIs, SIGNAL(spotifyPlayingTrackFetched(Track)), this, SLOT(getTrack(Track)));
 	connect(refreshAPIs, SIGNAL(geniusLyricsFetched(Lyrics)), this, SLOT(getLyrics(Lyrics)));
@@ -187,8 +188,7 @@ void MainWindow::onAboutToRefresh() {
 }
 
 void MainWindow::on_actionRefresh_triggered() {
-    //refreshAPIs->refresh();
-	ui->statusBar->showMessage("Err... not now, it's not a good moment...", 5000);
+    // Refresh function already connecting. UI can be updated from here
 }
 
 void MainWindow::on_actionExit_triggered() {

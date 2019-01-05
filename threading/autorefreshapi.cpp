@@ -33,7 +33,7 @@ void AutoRefreshAPI::refresh() {
 		t_refresh = new QTimer(this);
 		t_refresh->setSingleShot(true);
 		connect(t_refresh, SIGNAL(timeout()), this, SLOT(refresh()));
-		t_refresh->start(pref->getRefreshTimeout());
+		t_refresh->start(100);
 		
 #ifdef QT_DEBUG
 		cout << "AutoRefreshAPI> APIs connected." << endl;
