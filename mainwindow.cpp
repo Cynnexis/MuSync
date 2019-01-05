@@ -9,13 +9,15 @@ MainWindow::MainWindow(QWidget *parent) :
 	changeTitle();
 	
 	pref = Preferences::getInstance(this);
-	R::getInstance(this);
 	
 	// Change the the name of "File" menu to the application name
 	ui->menuFile->setTitle(qApp->applicationName());
 	
 	// Add some icons
-	ui->actionRefresh->setIcon(R::getInstance()->getRefresh());
+	ui->actionRefresh->setIcon(R::getRefresh());
+	ui->actionExit->setIcon(R::getPower());
+	ui->actionOpenTrackOnSpotifyWeb->setIcon(R::getBrowser());
+	ui->actionOpenAlbumOnSpotifyWeb->setIcon(R::getBrowser());
 	
 	ui->lb_title->addActions({ui->actionOpenTrackOnSpotifyApp, ui->actionOpenTrackOnSpotifyWeb});
 	ui->lb_album->addActions({ui->actionOpenAlbumOnSpotifyApp, ui->actionOpenAlbumOnSpotifyWeb});
@@ -102,8 +104,8 @@ void MainWindow::onTrackArtistsChanged(QArtistList artists) {
 	
 	for (Artist artist : artists) {
 		QMenu* m = ui->menuArtists->addMenu(artist.getName());
-		QAction* aApp = m->addAction("Open on Spotify App");
-		QAction* aWeb = m->addAction("Open on Spotify Web");
+		QAction* aApp = m->addAction(QIcon(R::getSpotify()), "Open on Spotify App");
+		QAction* aWeb = m->addAction(QIcon(R::getBrowser()), "Open on Spotify Web");
 		// Lambda functions: https://medium.com/genymobile/how-c-lambda-expressions-can-improve-your-qt-code-8cd524f4ed9f
 		connect(aApp, &QAction::triggered, [=]() {
 			QDesktopServices::openUrl(QUrl(artist.getSpotifyUri()));

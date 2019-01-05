@@ -14,8 +14,8 @@ WebAPI::WebAPI(QObject *parent) : QObject(parent) {
 	
 	// Get the client id and secret from file
 	
-	o2_spotify->setClientId(R::getInstance()->getSpotifyClientId());
-	o2_spotify->setClientSecret(R::getInstance()->getSpotifyClientSecret());
+	o2_spotify->setClientId(R::getSpotifyClientId());
+	o2_spotify->setClientSecret(R::getSpotifyClientSecret());
 	o2_spotify->setScope("user-read-currently-playing");
 	o2_spotify->setLocalPort(6814);
 	
@@ -30,8 +30,8 @@ WebAPI::WebAPI(QObject *parent) : QObject(parent) {
 	connect(o2_genius, SIGNAL(openBrowser(QUrl)), this, SLOT(onGeniusOpenBrowser(QUrl)));
 	connect(o2_genius, SIGNAL(closeBrowser()), this, SLOT(onGeniusCloseBrowser()));
 	
-	o2_genius->setClientId(R::getInstance()->getGeniusClientId());
-	o2_genius->setClientSecret(R::getInstance()->getGeniusClientSecret());
+	o2_genius->setClientId(R::getGeniusClientId());
+	o2_genius->setClientSecret(R::getGeniusClientSecret());
 	o2_genius->setRequestUrl("https://api.genius.com/oauth/authorize");
 	o2_genius->setTokenUrl("https://api.genius.com/oauth/token");
 	o2_genius->setRefreshTokenUrl("https://api.genius.com/oauth/token");

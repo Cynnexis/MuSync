@@ -1,98 +1,86 @@
 #include "r.h"
 
-R* R::r;
-
-R::R(QObject *parent) : QObject(parent) {
-}
-
-R* R::getInstance(QObject* parent) {
-	if (R::r == nullptr)
-		R::r = new R(parent);
-
-	return R::r;
-}
-
-QString R::getSpotifyClientIdPath() const {
+QString R::getSpotifyClientIdPath() {
 	return ":/text/spotify-client-id";
 }
 
-QString R::getSpotifyClientId() const {
+QString R::getSpotifyClientId() {
 	return getCodeFromPath(getSpotifyClientIdPath());
 }
 
-QString R::getSpotifyClientSecretPath() const {
+QString R::getSpotifyClientSecretPath() {
 	return ":/text/spotify-client-secret";
 }
 
-QString R::getSpotifyClientSecret() const {
+QString R::getSpotifyClientSecret() {
 	return getCodeFromPath(getSpotifyClientSecretPath());
 }
 
-QString R::getGeniusClientIdPath() const {
+QString R::getGeniusClientIdPath() {
 	return ":/text/genius-client-id";
 }
 
-QString R::getGeniusClientId() const {
+QString R::getGeniusClientId() {
 	return getCodeFromPath(getGeniusClientIdPath());
 }
 
-QString R::getGeniusClientSecretPath() const {
+QString R::getGeniusClientSecretPath() {
 	return ":/text/genius-client-secret";
 }
 
-QString R::getGeniusClientSecret() const {
+QString R::getGeniusClientSecret() {
 	return getCodeFromPath(getGeniusClientSecretPath());
 }
 
-QColor R::getPrimaryColor() const {
+QColor R::getPrimaryColor() {
 	return QColor(251, 166, 10, 255); // #FBA60A
 }
 
-QString R::getMuSyncIconPath() const {
+QString R::getMuSyncIconPath() {
 	return ":/svg/musync";
 }
 
-QPixmap R::getMuSyncIcon() const {
+QPixmap R::getMuSyncIcon() {
 	return getSvg(getMuSyncIconPath());
 }
 
-QString R::getSpotifyPath() const {
+QString R::getSpotifyPath() {
 	return ":/svg/spotify";
 }
 
-QPixmap R::getSpotify() const {
+QPixmap R::getSpotify() {
 	return getSvg(getSpotifyPath());
 }
 
-QString R::getGeniusPath() const {
+QString R::getGeniusPath() {
 	return ":/svg/genius";
 }
 
-QPixmap R::getGenius() const {
+QPixmap R::getGenius() {
 	return getSvg(getGeniusPath());
 }
 
-QString R::getGeniusCroppedPath() const {
+QString R::getGeniusCroppedPath() {
 	return ":/svg/genius-cropped";
 }
 
-QPixmap R::getGeniusCropped() const {
+QPixmap R::getGeniusCropped() {
 	return getSvg(getGeniusCroppedPath());
 }
 
-QString R::getQtPath() const {
+QString R::getQtPath() {
 	return ":/svg/qt";
 }
 
-QPixmap R::getQt() const {
+QPixmap R::getQt() {
 	return getSvg(getQtPath());
 }
 
-QString R::getRefreshPath() const {
+QString R::getRefreshPath() {
 	return ":/svg/refresh";
 }
 
-QPixmap R::getRefresh() const {
+QPixmap R::getRefresh() {
 	return getSvg(getRefreshPath(), getPrimaryColor());
 }
 
@@ -100,11 +88,47 @@ QPixmap R::getRefresh(const QColor& tint) {
 	return getSvg(getRefreshPath(), tint);
 }
 
-QPixmap R::getSvg(const QString& path) const {
+QString R::getBrowserPath() {
+	return ":/svg/browser";
+}
+
+QPixmap R::getBrowser() {
+	return getSvg(getBrowserPath(), getPrimaryColor());
+}
+
+QPixmap R::getBrowser(const QColor& tint) {
+	return getSvg(getBrowserPath(), tint);
+}
+
+QString R::getSettingsPath() {
+	return ":/svg/settings";
+}
+
+QPixmap R::getSettings() {
+	return getSvg(getSettingsPath(), getPrimaryColor());
+}
+
+QPixmap R::getSettings(const QColor& tint) {
+	return getSvg(getSettingsPath(), tint);
+}
+
+QString R::getPowerPath() {
+	return ":/svg/power";
+}
+
+QPixmap R::getPower() {
+	return getSvg(getPowerPath(), getPrimaryColor());
+}
+
+QPixmap R::getPower(const QColor& tint) {
+	return getSvg(getPowerPath(), tint);
+}
+
+QPixmap R::getSvg(const QString& path) {
 	return QPixmap(path);
 }
 
-QPixmap R::getSvg(const QString& path, const QColor& tint) const {	
+QPixmap R::getSvg(const QString& path, const QColor& tint) {	
 	// Source code inspired from https://stackoverflow.com/questions/15123544/change-the-color-of-an-svg-in-qt
 	QFile f(path);
 	
@@ -126,7 +150,7 @@ QPixmap R::getSvg(const QString& path, const QColor& tint) const {
 	return pixmap;
 }
 
-QString R::getCodeFromPath(const QString path) const {
+QString R::getCodeFromPath(const QString path) {
 	QFile f(path);
 	
 	if (!f.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -139,7 +163,7 @@ QString R::getCodeFromPath(const QString path) const {
 	return content;
 }
 
-void R::setAttrRec(QDomElement& elem, const QString& tagName, const QString& attr, const QString& value) const {
+void R::setAttrRec(QDomElement& elem, const QString& tagName, const QString& attr, const QString& value) {
 	if (elem.tagName().compare(tagName) == 0 &&
 		(attr != "fill" || (attr == "fill" && elem.attribute(attr, "") != "none"))) {
 		elem.setAttribute(attr, value);

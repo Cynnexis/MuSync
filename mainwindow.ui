@@ -231,6 +231,11 @@
    </property>
   </action>
   <action name="actionExit">
+   <property name="icon">
+    <iconset theme=":/svg/power">
+     <normalon>:/svg/power</normalon>
+    </iconset>
+   </property>
    <property name="text">
     <string>Exit</string>
    </property>
@@ -250,8 +255,8 @@
   </action>
   <action name="actionOpenTrackOnSpotifyWeb">
    <property name="icon">
-    <iconset theme=":/svg/spotify">
-     <normalon>:/svg/spotify</normalon>
+    <iconset theme=":/svg/browser">
+     <normalon>:/svg/browser</normalon>
     </iconset>
    </property>
    <property name="text">
@@ -276,8 +281,8 @@
   </action>
   <action name="actionOpenAlbumOnSpotifyWeb">
    <property name="icon">
-    <iconset theme=":/svg/spotify">
-     <normalon>:/svg/spotify</normalon>
+    <iconset theme=":/svg/browser">
+     <normalon>:/svg/browser</normalon>
     </iconset>
    </property>
    <property name="text">

@@ -13,55 +13,58 @@
 
 using namespace std;
 
-class R : public QObject
+namespace R
 {
-	Q_OBJECT
-public:
-	static R* getInstance(QObject* parent = nullptr);
+	QString getSpotifyClientIdPath();
+	QString getSpotifyClientId();
 	
-	QString getSpotifyClientIdPath() const;
-	QString getSpotifyClientId() const;
+	QString getSpotifyClientSecretPath();
+	QString getSpotifyClientSecret();
 	
-	QString getSpotifyClientSecretPath() const;
-	QString getSpotifyClientSecret() const;
+	QString getGeniusClientIdPath();
+	QString getGeniusClientId();
 	
-	QString getGeniusClientIdPath() const;
-	QString getGeniusClientId() const;
+	QString getGeniusClientSecretPath();
+	QString getGeniusClientSecret();
 	
-	QString getGeniusClientSecretPath() const;
-	QString getGeniusClientSecret() const;
+	QColor getPrimaryColor();
 	
-	QColor getPrimaryColor() const;
+	QString getMuSyncIconPath();
+	QPixmap getMuSyncIcon();
 	
-	QString getMuSyncIconPath() const;
-	QPixmap getMuSyncIcon() const;
+	QString getSpotifyPath();
+	QPixmap getSpotify();
 	
-	QString getSpotifyPath() const;
-	QPixmap getSpotify() const;
+	QString getGeniusPath();
+	QPixmap getGenius();
 	
-	QString getGeniusPath() const;
-	QPixmap getGenius() const;
+	QString getGeniusCroppedPath();
+	QPixmap getGeniusCropped();
 	
-	QString getGeniusCroppedPath() const;
-	QPixmap getGeniusCropped() const;
+	QString getQtPath();
+	QPixmap getQt();
 	
-	QString getQtPath() const;
-	QPixmap getQt() const;
-	
-	QString getRefreshPath() const;
-	QPixmap getRefresh() const;
+	QString getRefreshPath();
+	QPixmap getRefresh();
 	QPixmap getRefresh(const QColor& tint);
 	
-	QPixmap getSvg(const QString& path) const;
-	QPixmap getSvg(const QString& path, const QColor& tint) const;
+	QString getBrowserPath();
+	QPixmap getBrowser();
+	QPixmap getBrowser(const QColor& tint);
 	
-private:
-	explicit R(QObject *parent = nullptr);
+	QString getSettingsPath();
+	QPixmap getSettings();
+	QPixmap getSettings(const QColor& tint);
 	
-	static R* r;
+	QString getPowerPath();
+	QPixmap getPower();
+	QPixmap getPower(const QColor& tint);
 	
-	QString getCodeFromPath(const QString path) const;
-	void setAttrRec(QDomElement& elem, const QString& tagName, const QString& attr, const QString& value) const;
+	QPixmap getSvg(const QString& path);
+	QPixmap getSvg(const QString& path, const QColor& tint);
+	
+	QString getCodeFromPath(const QString path);
+	void setAttrRec(QDomElement& elem, const QString& tagName, const QString& attr, const QString& value);
 };
 
 #endif // R_H
