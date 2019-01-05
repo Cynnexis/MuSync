@@ -34,7 +34,11 @@ SOURCES += \
     oauth/webapi.cpp \
     models/track.cpp \
     preferences.cpp \
-    oauth\oauthdialog.cpp
+    oauth\oauthdialog.cpp \
+    models/artist.cpp \
+    models/qartistlist.cpp \
+    models/album.cpp \
+    models/lyrics.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -44,7 +48,11 @@ HEADERS += \
     threading/barrier.h \
     preferences.h \
     oauth\oauthdialog.h \
-    threading/mutexdata.h
+    threading/mutexdata.h \
+    models/artist.h \
+    models/qartistlist.h \
+    models/album.h \
+    models/lyrics.h
 
 FORMS += \
         mainwindow.ui \

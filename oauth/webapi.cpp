@@ -85,6 +85,10 @@ Track WebAPI::getPlayingTrack() {
 		return Track();
 	}
 	
+#ifdef QT_DEBUG
+	//cout << "Spotify> " << bufferSpotifyPlayingTrackData.toStdString() << endl;
+#endif
+	
 	QJsonDocument doc = QJsonDocument::fromJson(bufferSpotifyPlayingTrackData.toUtf8());
 	QJsonObject json = doc.object();
 	
@@ -94,13 +98,66 @@ Track WebAPI::getPlayingTrack() {
 	QString name = json["name"].toString("");
 	
 	QJsonArray jsonArtists = json["artists"].toArray();
-	QStringList artists;
-	for (QJsonValue jsonArtist : jsonArtists)
-		artists << jsonArtist.toObject()["name"].toString("");
+	QArtistList artists;
+	for (QJsonValue jsonArtist : jsonArtists) {
+		QString artistName = jsonArtist.toObject()["name"].toString("");
+		QString artistSpotifyUri = jsonArtist.toObject()["uri"].toString("");
+		QString artistSpotifyWebUrl = "";
+		
+		QJsonObject external_urls = jsonArtist.toObject()["external_urls"].toObject();
+		if (external_urls.keys().contains("spotify"))
+			artistSpotifyWebUrl = external_urls["spotify"].toString("");
+		
+		if (artistName != "")
+			artists.append(Artist(artistName, artistSpotifyUri, artistSpotifyWebUrl));
+	}
 	
-	artists.removeAll("");
+	QString albumName = "";
+	QString albumRawReleaseDate = "";
+	QDate albumReleaseDate = QDate(0, 1, 1);
+	int albumTotalTracks = 0;
+	QString albumSpotifyUri = "";
+	QString albumSpotifyWebUrl = "";
 	
-	QString albumName = json["album"].toObject()["name"].toString("");
+	// Construct 'album"
+	{
+		// Get JSON object of album
+		QJsonObject album = json["album"].toObject();
+		
+		// Get the name
+		albumName = album["name"].toString("");
+		
+		// Get the release date
+		albumRawReleaseDate = album["release_date"].toString("");
+		
+		// Parse the QString to QDate
+		if (albumRawReleaseDate != "") {
+			QStringList splitted = albumRawReleaseDate.split("T")[0].split("-");
+			
+			if (splitted.length() >= 3) {
+				bool s1 = false, s2 = false, s3 = false;
+				QDate d = QDate(splitted[0].toInt(&s1), splitted[1].toInt(&s2), splitted[2].toInt(&s3));
+				
+				if (s1 && s2 && s3)
+					albumReleaseDate = d;
+			}
+		}
+		
+		// Get the total tracks
+		albumTotalTracks = album["total_tracks"].toInt(0);
+		
+		// Get spotify uri
+		albumSpotifyUri = album["uri"].toString("");
+		
+		// Get spotify web url
+		if (album.keys().contains("external_urls")) {
+			QJsonObject external_urls = album["external_urls"].toObject();
+			
+			albumSpotifyWebUrl = external_urls["spotify"].toString("");
+		}
+	}
+	
+	Album album(albumName, albumReleaseDate, albumTotalTracks, albumSpotifyUri, albumSpotifyWebUrl);
 	
 	QJsonArray thumbnails = json["album"].toObject()["images"].toArray();
 	QString thumbnailUrl = "";
@@ -108,7 +165,24 @@ Track WebAPI::getPlayingTrack() {
 	if (thumbnails.size() > 0)
 		thumbnailUrl = thumbnails[0].toObject()["url"].toString(thumbnailUrl);
 	
-	Track track = Track(name, artists, albumName, thumbnailUrl, false);
+	int trackNumber = json["track_number"].toInt(0);
+	
+	QString spotifyUri = json["uri"].toString("");
+	
+	QString spotifyWebUrl = "";
+	QJsonObject external_urls = json["external_urls"].toObject();
+	
+	if (external_urls.keys().contains("spotify"))
+		spotifyWebUrl = external_urls["spotify"].toString("");
+	
+	Track track = Track(name,
+						artists,
+						album,
+						thumbnailUrl,
+						trackNumber,
+						spotifyUri,
+						spotifyWebUrl,
+						false);
 	
 #ifdef QT_DEBUG
 	cout << "Spotify> " << track.toString().toStdString() << endl;
@@ -130,8 +204,8 @@ void WebAPI::connectToGenius() {
 #endif
 }
 
-QString WebAPI::getLyrics(const Track& track) {
-	QString lyrics = "No lyrics found";
+Lyrics WebAPI::getLyrics(const Track& track) {
+	Lyrics lyrics("No lyrics found");
 	
 	if (track.getName() == "" || track.getArtists().isEmpty())
 		return lyrics;
@@ -158,6 +232,10 @@ QString WebAPI::getLyrics(const Track& track) {
 	
 #ifdef QT_DEBUG
 	cout << "Genius> getLyrics> Answer received!" << endl;
+#endif
+	
+#ifdef QT_DEBUG
+	//cout << "Genius> " << bufferGeniusSongInfo.toStdString() << endl;
 #endif
 	
 	if (bufferGeniusSongInfo == "") {
@@ -190,8 +268,11 @@ QString WebAPI::getLyrics(const Track& track) {
 			firstResultPath = "/" + firstResultPath;
 		
 		if (firstResultPath != "") {
+			QString url = "https://genius.com" + firstResultPath;
+			lyrics.setGeniusUrl(url);
+			
 			// Fetch the HTML page containing the lyrics
-			QNetworkRequest request = QNetworkRequest(QUrl("https://genius.com" + firstResultPath));
+			QNetworkRequest request = QNetworkRequest(QUrl(url));
 			QNetworkAccessManager* mgr = new QNetworkAccessManager();
 			QNetworkReply* response = mgr->get(request);
 			QEventLoop event;
@@ -232,7 +313,7 @@ QString WebAPI::getLyrics(const Track& track) {
 			//QTextDocument text;
 			//text.setHtml(html);
 			//html = text.toPlainText();
-			lyrics = html;
+			lyrics.setLyrics(html);
 			
 			emit geniusLyricsFetched(lyrics);
 			return lyrics;
@@ -250,7 +331,7 @@ QString WebAPI::getLyrics(const Track& track) {
 	}
 }
 
-QString WebAPI::getLyrics() {
+Lyrics WebAPI::getLyrics() {
 	return getLyrics(getPlayingTrack());
 }
 

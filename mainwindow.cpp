@@ -13,10 +13,13 @@ MainWindow::MainWindow(QWidget *parent) :
 	// Change the the name of "File" menu to the application name
 	ui->menuFile->setTitle(qApp->applicationName());
 	
+	ui->lb_title->addActions({ui->actionOpenTrackOnSpotifyApp, ui->actionOpenTrackOnSpotifyWeb});
+	ui->lb_album->addActions({ui->actionOpenAlbumOnSpotifyApp, ui->actionOpenAlbumOnSpotifyWeb});
+	
 	api = new WebAPI();
 	
 	connect(api, SIGNAL(spotifyPlayingTrackFetched(Track)), this, SLOT(getTrack(Track)));
-	connect(api, SIGNAL(geniusLyricsFetched(QString)), this, SLOT(getLyrics(QString)));
+	connect(api, SIGNAL(geniusLyricsFetched(Lyrics)), this, SLOT(getLyrics(Lyrics)));
 	connect(api, SIGNAL(spotifyOpenBrowser(QUrl)), this, SLOT(requestOpenBrowser(QUrl)));
 	connect(api, SIGNAL(spotifyCloseBrowser()), this, SLOT(requestCloseBrowser()));
 	connect(api, SIGNAL(spotifyLinkingFailed()), this, SLOT(requestCloseBrowser()));
@@ -28,9 +31,12 @@ MainWindow::MainWindow(QWidget *parent) :
 	
 	// Connect `currentTrack` to slots
 	connect(&currentTrack, SIGNAL(nameChanged(QString)), this, SLOT(onTrackNameChanged(QString)));
-	connect(&currentTrack, SIGNAL(artistsChanged(QStringList)), this, SLOT(onTrackArtistsChanged(QStringList)));
-	connect(&currentTrack, SIGNAL(albumNameChanged(QString)), this, SLOT(onTrackAlbumName(QString)));
+	connect(&currentTrack, SIGNAL(artistsChanged(QArtistList)), this, SLOT(onTrackArtistsChanged(QArtistList)));
+	connect(&currentTrack, SIGNAL(albumChanged(Album)), this, SLOT(onTrackAlbumChanged(Album)));
 	connect(&currentTrack, SIGNAL(thumbnailChanged(QPixmap)), this, SLOT(onTrackThumbnailChanged(QPixmap)));
+	
+	// Connect `currentLyrics` to slots
+	connect(&currentLyrics, SIGNAL(lyricsChanged(QString)), this, SLOT(onLyricsLyricsChanged(QString)));
 }
 
 MainWindow::~MainWindow() {
@@ -57,53 +63,58 @@ void MainWindow::changeTitle(QString title) {
 void MainWindow::changeTitle(Track track) {
 	if (track.getName() == "")
 		changeTitle();
-	else {
-		QString artists = "";
-		for (int i = 0, imax = track.getArtists().length(); i < imax; i++) {
-			artists += track.getArtists()[i];
-			if (i + 2 < imax)
-				artists += ", ";
-			else if (i + 1 < imax)
-				artists += " and ";
-		}
-		
-		if (artists != "")
-			artists = " by " + artists;
-		
-		if (track.getAlbumName() != "")
-			artists += " [" + track.getAlbumName() + "]";
-		
-		changeTitle(track.getName() + artists);
-	}
+	else
+		changeTitle(track.toString());
 }
 
 void MainWindow::getTrack(Track track) {
 	if (track.getName() != "" && currentTrack != track) {
 		currentTrack = track;
 		currentTrack.downloadThumbnail();
-		changeTitle(currentTrack);
+		//changeTitle(currentTrack);
 	}
 }
 
-void MainWindow::getLyrics(QString lyrics) {
+void MainWindow::getLyrics(Lyrics lyrics) {
 	ui->actionRefresh->setEnabled(true);
-	if (ui->te_lyrics->toPlainText() != lyrics)
-		ui->te_lyrics->setText(lyrics);
+	if (lyrics.getLyrics() != "" && currentLyrics != lyrics)
+		currentLyrics = lyrics;
 }
 
 void MainWindow::onTrackNameChanged(QString name) {
 	ui->lb_title->setText(name);
 	changeTitle(currentTrack);
+	
+	ui->menuTrack->setEnabled(true);
 }
 
-void MainWindow::onTrackArtistsChanged(QStringList artists) {
-	ui->lb_artists->setText(artists.join(", "));
+void MainWindow::onTrackArtistsChanged(QArtistList artists) {
+	ui->lb_artists->setText(artists.join());
 	changeTitle(currentTrack);
+	
+	// Update the links
+	ui->menuArtists->setEnabled(true);
+	ui->menuArtists->clear();
+	
+	for (Artist artist : artists) {
+		QMenu* m = ui->menuArtists->addMenu(artist.getName());
+		QAction* aApp = m->addAction("Open on Spotify App");
+		QAction* aWeb = m->addAction("Open on Spotify Web");
+		// Lambda functions: https://medium.com/genymobile/how-c-lambda-expressions-can-improve-your-qt-code-8cd524f4ed9f
+		connect(aApp, &QAction::triggered, [=]() {
+			QDesktopServices::openUrl(QUrl(artist.getSpotifyUri()));
+		});
+		connect(aWeb, &QAction::triggered, [=]() {
+			QDesktopServices::openUrl(QUrl(artist.getSpotifyWebUrl()));
+		});
+	}
 }
 
-void MainWindow::onTrackAlbumName(QString albumName) {
-	ui->lb_album->setText(albumName);
+void MainWindow::onTrackAlbumChanged(Album album) {
+	ui->lb_album->setText(album.getName());
 	changeTitle(currentTrack);
+	
+	ui->menuAlbum->setEnabled(true);
 }
 
 void MainWindow::onTrackThumbnailChanged(QPixmap thumbnail) {
@@ -111,6 +122,13 @@ void MainWindow::onTrackThumbnailChanged(QPixmap thumbnail) {
 								.scaled(ui->lb_thumbnail->width(),
 										ui->lb_thumbnail->height(),
 										Qt::KeepAspectRatio));
+}
+
+void MainWindow::onLyricsLyricsChanged(QString lyrics) {
+	if (ui->te_lyrics->toPlainText() != lyrics) {
+		ui->te_lyrics->setText(lyrics);
+		ui->menuGenius->setEnabled(true);
+	}
 }
 
 void MainWindow::connectAPIs() {
@@ -175,4 +193,33 @@ void MainWindow::on_actionRefresh_triggered() {
 
 void MainWindow::on_actionExit_triggered() {
     qApp->exit(0);
+}
+
+void MainWindow::on_actionOpenTrackOnSpotifyApp_triggered() {
+    QDesktopServices::openUrl(QUrl(currentTrack.getSpotifyUri()));
+}
+
+void MainWindow::on_actionOpenTrackOnSpotifyWeb_triggered() {
+	QDesktopServices::openUrl(QUrl(currentTrack.getSpotifyWebUrl()));
+}
+
+void MainWindow::on_actionOpenAlbumOnSpotifyApp_triggered() {
+	QDesktopServices::openUrl(QUrl(currentTrack.getAlbum().getSpotifyUri()));
+}
+
+void MainWindow::on_actionOpenAlbumOnSpotifyWeb_triggered() {
+	QDesktopServices::openUrl(QUrl(currentTrack.getAlbum().getSpotifyWebUrl()));
+}
+
+void MainWindow::on_actionOpenLyricsOnGenius_triggered() {
+	cout << "MainWindow> Genius URL: " << currentLyrics.getGeniusUrl().toStdString() << endl;
+	QDesktopServices::openUrl(QUrl(currentLyrics.getGeniusUrl()));
+}
+
+void MainWindow::on_actionAboutMuSync_triggered() {
+    QMessageBox::about(this, "About MuSync...", "MuSync is a Qt base application that fetch the lyrics of your current song on Spotify.");
+}
+
+void MainWindow::on_actionAboutQt_triggered() {
+    QMessageBox::aboutQt(this, "About Qt...");
 }

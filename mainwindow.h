@@ -7,9 +7,13 @@
 #include <QTimer>
 #include <QtConcurrent>
 #include <QFuture>
+#include <QMessageBox>
+#include <QAction>
 
 #include "oauth/webapi.h"
 #include "oauth/oauthdialog.h"
+#include "models/qartistlist.h"
+#include "models/artist.h"
 #include "preferences.h"
 
 using namespace std;
@@ -32,12 +36,14 @@ private:
 	
 private slots:
 	void getTrack(Track track);
-	void getLyrics(QString lyrics);
+	void getLyrics(Lyrics lyrics);
 	
 	void onTrackNameChanged(QString name);
-	void onTrackArtistsChanged(QStringList artists);
-	void onTrackAlbumName(QString albumName);
+	void onTrackArtistsChanged(QArtistList artists);
+	void onTrackAlbumChanged(Album album);
 	void onTrackThumbnailChanged(QPixmap thumbnail);
+	
+	void onLyricsLyricsChanged(QString lyrics);
 	
 	void connectAPIs();
 	
@@ -54,6 +60,15 @@ private slots:
 	void on_actionRefresh_triggered();
 	void on_actionExit_triggered();
 	
+	void on_actionOpenTrackOnSpotifyApp_triggered();
+	void on_actionOpenTrackOnSpotifyWeb_triggered();
+	void on_actionOpenAlbumOnSpotifyApp_triggered();
+	void on_actionOpenAlbumOnSpotifyWeb_triggered();
+	void on_actionOpenLyricsOnGenius_triggered();
+	
+	void on_actionAboutMuSync_triggered();
+	void on_actionAboutQt_triggered();
+	
 private:
 	Ui::MainWindow *ui = nullptr;
 	Preferences* pref = nullptr;
@@ -61,6 +76,7 @@ private:
 	
 	WebAPI* api = nullptr;
 	Track currentTrack;
+	Lyrics currentLyrics;
 	QThread* threadAPIs = nullptr;
 	QTimer* timerRefresh = nullptr;
 };
