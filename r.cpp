@@ -179,3 +179,7 @@ void R::setAttrRec(QDomElement& elem, const QString& tagName, const QString& att
 		setAttrRec(childElem, tagName, attr, value);
 	}
 }
+
+QColor R::getSpotifyColor() {
+	return QColor(30, 215, 96);
+}

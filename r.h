@@ -29,6 +29,8 @@ namespace R
 	
 	QColor getPrimaryColor();
 	
+	QColor getSpotifyColor();
+	
 	QString getMuSyncIconPath();
 	QPixmap getMuSyncIcon();
 	
