@@ -174,16 +174,10 @@ void MainWindow::showEvent(QShowEvent* event) {
 }
 
 void MainWindow::onAPIsConnected() {
-#ifdef QT_DEBUG
-	cout << "MainWindow> APIs connected" << endl;
-#endif
 	ui->actionRefresh->setEnabled(true);
 }
 
 void MainWindow::onAboutToRefresh() {
-#ifdef QT_DEBUG
-	cout << "MainWindow> About to refresh" << endl;
-#endif
 	ui->actionRefresh->setEnabled(false);
 }
 

@@ -4,10 +4,6 @@
 #include <iostream>
 #include <QObject>
 #include <QMainWindow>
-#include <QTimer>
-#include <QThreadPool>
-#include <QtConcurrent>
-#include <QFuture>
 #include <QMessageBox>
 #include <QAction>
 
@@ -47,11 +43,7 @@ private slots:
 	
 	void onLyricsLyricsChanged(QString lyrics);
 	
-	//void connectAPIs();
-	
 public slots:
-	//void refresh();
-	
 	void requestOpenBrowser(const QUrl& url);
 	void requestCloseBrowser();
 	
