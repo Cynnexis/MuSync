@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui concurrent network webenginewidgets
+QT       += core gui concurrent network webenginewidgets svg xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -38,7 +38,8 @@ SOURCES += \
     models/artist.cpp \
     models/qartistlist.cpp \
     models/album.cpp \
-    models/lyrics.cpp
+    models/lyrics.cpp \
+    r.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -52,7 +53,8 @@ HEADERS += \
     models/artist.h \
     models/qartistlist.h \
     models/album.h \
-    models/lyrics.h
+    models/lyrics.h \
+    r.h
 
 FORMS += \
         mainwindow.ui \

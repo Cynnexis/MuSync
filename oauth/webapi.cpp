@@ -13,11 +13,9 @@ WebAPI::WebAPI(QObject *parent) : QObject(parent) {
 	connect(o2_spotify, SIGNAL(closeBrowser()), this, SLOT(onSpotifyCloseBrowser()));
 	
 	// Get the client id and secret from file
-	QString spotifyClientId = this->getCode(":/text/spotify-client-id");
-	QString spotifyClientSecret = this->getCode(":/text/spotify-client-secret");
 	
-	o2_spotify->setClientId(spotifyClientId);
-	o2_spotify->setClientSecret(spotifyClientSecret);
+	o2_spotify->setClientId(R::getSpotifyClientId());
+	o2_spotify->setClientSecret(R::getSpotifyClientSecret());
 	o2_spotify->setScope("user-read-currently-playing");
 	o2_spotify->setLocalPort(6814);
 	
@@ -32,11 +30,8 @@ WebAPI::WebAPI(QObject *parent) : QObject(parent) {
 	connect(o2_genius, SIGNAL(openBrowser(QUrl)), this, SLOT(onGeniusOpenBrowser(QUrl)));
 	connect(o2_genius, SIGNAL(closeBrowser()), this, SLOT(onGeniusCloseBrowser()));
 	
-	QString geniusClientId = this->getCode(":/text/genius-client-id");
-	QString geniusClientSecret = this->getCode(":/text/genius-client-secret");
-	
-	o2_genius->setClientId(geniusClientId);
-	o2_genius->setClientSecret(geniusClientSecret);
+	o2_genius->setClientId(R::getGeniusClientId());
+	o2_genius->setClientSecret(R::getGeniusClientSecret());
 	o2_genius->setRequestUrl("https://api.genius.com/oauth/authorize");
 	o2_genius->setTokenUrl("https://api.genius.com/oauth/token");
 	o2_genius->setRefreshTokenUrl("https://api.genius.com/oauth/token");
@@ -415,19 +410,4 @@ void WebAPI::onRequestFinished(int code, QNetworkReply::NetworkError error, QByt
 		bufferGeniusSongInfo = data;
 		loopGenius.quit();
 	}
-}
-
-/* PRIVATE FUNCTION */
-
-QString WebAPI::getCode(const QString& filename) const {
-	QFile f(filename);
-	
-	if (!f.open(QIODevice::ReadOnly | QIODevice::Text))
-		throw "Cannot open the credential files.\n";
-	
-	QString content = f.readAll().replace("\r\n", "").replace("\r", "").replace("\n", "");
-	
-	f.close();
-	
-	return content;
 }
