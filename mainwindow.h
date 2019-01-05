@@ -4,17 +4,14 @@
 #include <iostream>
 #include <QObject>
 #include <QMainWindow>
-#include <QTimer>
-#include <QtConcurrent>
-#include <QFuture>
 #include <QMessageBox>
 #include <QAction>
 
-#include "oauth/webapi.h"
 #include "oauth/oauthdialog.h"
 #include "models/qartistlist.h"
 #include "models/artist.h"
 #include "preferences.h"
+#include "threading/autorefreshapi.h"
 #include "r.h"
 
 using namespace std;
@@ -46,11 +43,7 @@ private slots:
 	
 	void onLyricsLyricsChanged(QString lyrics);
 	
-	void connectAPIs();
-	
 public slots:
-	void refresh();
-	
 	void requestOpenBrowser(const QUrl& url);
 	void requestCloseBrowser();
 	
@@ -58,6 +51,9 @@ private:
 	void showEvent(QShowEvent* event);
 	
 private slots:
+	void onAPIsConnected();
+	void onAboutToRefresh();
+	
 	void on_actionRefresh_triggered();
 	void on_actionExit_triggered();
 	
@@ -75,11 +71,10 @@ private:
 	Preferences* pref = nullptr;
 	OAuthDialog* webdialog = nullptr;
 	
-	WebAPI* api = nullptr;
+	AutoRefreshAPI* refreshAPIs;
+	QThread* threadAPIs;
 	Track currentTrack;
 	Lyrics currentLyrics;
-	QThread* threadAPIs = nullptr;
-	QTimer* timerRefresh = nullptr;
 };
 
 #endif // MAINWINDOW_H
