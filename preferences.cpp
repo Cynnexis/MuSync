@@ -23,7 +23,7 @@ Preferences* Preferences::getInstance(QObject* parent) {
 }
 
 bool Preferences::isFirstLaunch() {
-	return settings.value("app/firstLaunch", false).toBool();
+	return settings.value("app/firstLaunch", defaultFirstLaunch()).toBool();
 }
 
 void Preferences::setFirstLaunch(const bool& firstLaunch) {
@@ -31,8 +31,12 @@ void Preferences::setFirstLaunch(const bool& firstLaunch) {
 	emit firstLaunchChanged(firstLaunch);
 }
 
+bool Preferences::defaultFirstLaunch() {
+	return true;
+}
+
 void Preferences::initFirstLaunch() {
-	setFirstLaunch(true);
+	setFirstLaunch(defaultFirstLaunch());
 }
 
 int Preferences::getStartupBehavior() {
@@ -118,7 +122,7 @@ int Preferences::getRefreshTimeout() {
 	bool ok = false;
 	int refreshTimeout = settings.value("network/refreshTimeout", defaultRefreshTimeout()).toInt(&ok);
 	
-	if (ok && 1000 <= isRefreshTimeoutValid(refreshTimeout))
+	if (ok && isRefreshTimeoutValid(refreshTimeout))
 		return refreshTimeout;
 	else {
 		initRefreshTimeout();

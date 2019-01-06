@@ -38,7 +38,12 @@ MainWindow::MainWindow(QWidget *parent) :
 	
 	refreshAPIs->moveToThread(threadAPIs);
 	connect(threadAPIs, &QThread::started, refreshAPIs, &AutoRefreshAPI::refresh);
-	connect(threadAPIs, &QThread::finished, [=]() {refreshAPIs->stop(); refreshAPIs->deleteLater();});
+	connect(threadAPIs, &QThread::finished, [=]() {
+		refreshAPIs->stop();
+		delete refreshAPIs;
+		refreshAPIs = nullptr;
+	});
+	
 	connect(ui->actionRefresh, SIGNAL(triggered()), refreshAPIs, SLOT(refresh()));
 	
 	connect(refreshAPIs, SIGNAL(spotifyPlayingTrackFetched(Track)), this, SLOT(getTrack(Track)));
@@ -186,10 +191,16 @@ void MainWindow::onAboutToRefresh() {
 }
 
 void MainWindow::onStartupBehaviourChanged(int startupBehaviour) {
+#ifdef QT_DEBUG
+	cout << "MainWindow> Startup behaviour changed: " << startupBehaviour << endl;
+#endif
 	// TODO: Changed something in the system
 }
 
 void MainWindow::onStyleChanged(int style) {
+#ifdef QT_DEBUG
+	cout << "MainWindow> Style changed: " << style << endl;
+#endif
 	switch (style) {
 		case Preferences::STYLE_DEFAULT:
 			qApp->setStyleSheet("");
@@ -206,7 +217,7 @@ void MainWindow::on_actionRefresh_triggered() {
 }
 
 void MainWindow::on_actionSettings_triggered() {
-    if (dsettings == nullptr)
+	if (dsettings == nullptr)
 		dsettings = new DSettings(this);
 	
 	dsettings->show();

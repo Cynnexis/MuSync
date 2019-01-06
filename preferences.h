@@ -15,6 +15,7 @@ public:
 	
 	bool isFirstLaunch();
 	void setFirstLaunch(const bool& firstLaunch = true);
+	bool defaultFirstLaunch();
 	void initFirstLaunch();
 	
 	int getStartupBehavior();
