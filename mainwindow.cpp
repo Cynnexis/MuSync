@@ -248,8 +248,7 @@ void MainWindow::onStyleChanged(int style) {
 			qApp->setStyleSheet("");
 			break;
 		case Preferences::STYLE_DARK:
-			ui->statusBar->showMessage("Not implemented yet", 5000);
-			pref->setStyle(Preferences::STYLE_DEFAULT);
+			QMessageBox::information(this, "Restart required", "Please restart the application to apply the style.");
 			break;
 	}
 }

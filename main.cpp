@@ -12,15 +12,22 @@ int main(int argc, char *argv[])
 	QCoreApplication::setApplicationName("MuSync");
 	QCoreApplication::setOrganizationName("MuSync");
 	
-	a.setStyle(new DarkStyle());
+	Preferences* pref = Preferences::getInstance();
 	
-	FramelessWindow framelessWindow;
+	if (pref->getStyle() == Preferences::STYLE_DARK)
+		a.setStyle(new DarkStyle());
+	
 	MainWindow w;
 	
-	framelessWindow.setContent(&w);
-	framelessWindow.setWindowTitle(w.windowTitle());
-	framelessWindow.setWindowIcon(w.windowIcon());
-	framelessWindow.show();
+	if (pref->getStyle() == Preferences::STYLE_DARK) {
+		FramelessWindow framelessWindow;
+		framelessWindow.setContent(&w);
+		framelessWindow.setWindowTitle(w.windowTitle());
+		framelessWindow.setWindowIcon(w.windowIcon());
+		framelessWindow.show();
+	}
+	else
+		w.show();
 	
 	return a.exec();
 }
