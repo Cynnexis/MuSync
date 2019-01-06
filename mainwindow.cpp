@@ -19,6 +19,18 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(pref, SIGNAL(startupBehaviourChanged(int)), this, SLOT(onStartupBehaviourChanged(int)));
 	connect(pref, SIGNAL(styleChanged(int)), this, SLOT(onStyleChanged(int)));
 	
+	traySystem = new QSystemTrayIcon(QIcon(R::getMuSyncIcon()), this);
+	connect(traySystem, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(onTrayClicked(QSystemTrayIcon::ActivationReason)));
+	connect(traySystem, SIGNAL(messageClicked()), this, SLOT(onTrayMessageClicked()));
+	
+	trayMenu = new QMenu(qApp->applicationName(), this);
+	trayMenu->addAction(ui->actionRefresh);
+	trayMenu->addSeparator();
+	trayMenu->addAction(ui->actionExit);
+	
+	traySystem->setContextMenu(trayMenu);
+	traySystem->show();
+	
 	// Change the the name of "File" menu to the application name
 	ui->menuFile->setTitle(qApp->applicationName());
 	
@@ -97,6 +109,15 @@ void MainWindow::changeTitle(Track track) {
 		changeTitle();
 	else
 		changeTitle(track.toString());
+}
+
+void MainWindow::closeEvent(QCloseEvent* event) {
+	if (pref->getCloseButtonMinimized()) {
+		hide();
+		event->ignore();
+	}
+	else
+		event->accept();
 }
 
 void MainWindow::getTrack(Track track) {
@@ -180,6 +201,22 @@ void MainWindow::showEvent(QShowEvent* event) {
 	QMainWindow::showEvent(event);
 	
 	threadAPIs->start();
+}
+
+void MainWindow::onTrayClicked(QSystemTrayIcon::ActivationReason reason) {
+	switch (reason) {
+		case QSystemTrayIcon::DoubleClick:
+		case QSystemTrayIcon::Trigger:
+		case QSystemTrayIcon::MiddleClick:
+			show();
+			break;
+		default:
+			break;
+	}
+}
+
+void MainWindow::onTrayMessageClicked() {
+	// Do something if messages are displayed
 }
 
 void MainWindow::onAPIsConnected() {
