@@ -146,6 +146,7 @@
      <string>File</string>
     </property>
     <addaction name="actionRefresh"/>
+    <addaction name="actionSettings"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
@@ -222,7 +223,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset theme=":/svg/refresh">
+    <iconset>
      <normalon>:/svg/refresh</normalon>
     </iconset>
    </property>
@@ -232,7 +233,7 @@
   </action>
   <action name="actionExit">
    <property name="icon">
-    <iconset theme=":/svg/power">
+    <iconset>
      <normalon>:/svg/power</normalon>
     </iconset>
    </property>
@@ -242,7 +243,7 @@
   </action>
   <action name="actionOpenTrackOnSpotifyApp">
    <property name="icon">
-    <iconset theme=":/svg/spotify">
+    <iconset>
      <normalon>:/svg/spotify</normalon>
     </iconset>
    </property>
@@ -255,7 +256,7 @@
   </action>
   <action name="actionOpenTrackOnSpotifyWeb">
    <property name="icon">
-    <iconset theme=":/svg/browser">
+    <iconset>
      <normalon>:/svg/browser</normalon>
     </iconset>
    </property>
@@ -268,7 +269,7 @@
   </action>
   <action name="actionOpenAlbumOnSpotifyApp">
    <property name="icon">
-    <iconset theme=":/svg/spotify">
+    <iconset>
      <normalon>:/svg/spotify</normalon>
     </iconset>
    </property>
@@ -281,7 +282,7 @@
   </action>
   <action name="actionOpenAlbumOnSpotifyWeb">
    <property name="icon">
-    <iconset theme=":/svg/browser">
+    <iconset>
      <normalon>:/svg/browser</normalon>
     </iconset>
    </property>
@@ -294,7 +295,7 @@
   </action>
   <action name="actionOpenLyricsOnGenius">
    <property name="icon">
-    <iconset theme=":/svg/genius-cropped">
+    <iconset>
      <normalon>:/svg/genius-cropped</normalon>
     </iconset>
    </property>
@@ -307,7 +308,7 @@
   </action>
   <action name="actionAboutMuSync">
    <property name="icon">
-    <iconset theme=":/svg/musync">
+    <iconset>
      <normalon>:/svg/musync</normalon>
     </iconset>
    </property>
@@ -317,12 +318,22 @@
   </action>
   <action name="actionAboutQt">
    <property name="icon">
-    <iconset theme=":/svg/qt">
+    <iconset>
      <normalon>:/svg/qt</normalon>
     </iconset>
    </property>
    <property name="text">
     <string>About Qt...</string>
+   </property>
+  </action>
+  <action name="actionSettings">
+   <property name="icon">
+    <iconset>
+     <normalon>:/svg/settings</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>Settings</string>
    </property>
   </action>
  </widget>

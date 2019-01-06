@@ -16,11 +16,27 @@ MainWindow::MainWindow(QWidget *parent) :
 	
 	pref = Preferences::getInstance(this);
 	
+	connect(pref, SIGNAL(startupBehaviourChanged(int)), this, SLOT(onStartupBehaviourChanged(int)));
+	connect(pref, SIGNAL(styleChanged(int)), this, SLOT(onStyleChanged(int)));
+	
+	traySystem = new QSystemTrayIcon(QIcon(R::getMuSyncIcon()), this);
+	connect(traySystem, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(onTrayClicked(QSystemTrayIcon::ActivationReason)));
+	connect(traySystem, SIGNAL(messageClicked()), this, SLOT(onTrayMessageClicked()));
+	
+	trayMenu = new QMenu(qApp->applicationName(), this);
+	trayMenu->addAction(ui->actionRefresh);
+	trayMenu->addSeparator();
+	trayMenu->addAction(ui->actionExit);
+	
+	traySystem->setContextMenu(trayMenu);
+	traySystem->show();
+	
 	// Change the the name of "File" menu to the application name
 	ui->menuFile->setTitle(qApp->applicationName());
 	
 	// Add some icons
 	ui->actionRefresh->setIcon(R::getRefresh());
+	ui->actionSettings->setIcon(R::getSettings());
 	ui->actionExit->setIcon(R::getPower());
 	ui->actionOpenTrackOnSpotifyWeb->setIcon(R::getBrowser(R::getSpotifyColor()));
 	ui->actionOpenAlbumOnSpotifyWeb->setIcon(R::getBrowser(R::getSpotifyColor()));
@@ -34,7 +50,12 @@ MainWindow::MainWindow(QWidget *parent) :
 	
 	refreshAPIs->moveToThread(threadAPIs);
 	connect(threadAPIs, &QThread::started, refreshAPIs, &AutoRefreshAPI::refresh);
-	connect(threadAPIs, &QThread::finished, [=]() {refreshAPIs->stop(); refreshAPIs->deleteLater();});
+	connect(threadAPIs, &QThread::finished, [=]() {
+		refreshAPIs->stop();
+		delete refreshAPIs;
+		refreshAPIs = nullptr;
+	});
+	
 	connect(ui->actionRefresh, SIGNAL(triggered()), refreshAPIs, SLOT(refresh()));
 	
 	connect(refreshAPIs, SIGNAL(spotifyPlayingTrackFetched(Track)), this, SLOT(getTrack(Track)));
@@ -88,6 +109,15 @@ void MainWindow::changeTitle(Track track) {
 		changeTitle();
 	else
 		changeTitle(track.toString());
+}
+
+void MainWindow::closeEvent(QCloseEvent* event) {
+	if (pref->getCloseButtonMinimized()) {
+		hide();
+		event->ignore();
+	}
+	else
+		event->accept();
 }
 
 void MainWindow::getTrack(Track track) {
@@ -173,6 +203,22 @@ void MainWindow::showEvent(QShowEvent* event) {
 	threadAPIs->start();
 }
 
+void MainWindow::onTrayClicked(QSystemTrayIcon::ActivationReason reason) {
+	switch (reason) {
+		case QSystemTrayIcon::DoubleClick:
+		case QSystemTrayIcon::Trigger:
+		case QSystemTrayIcon::MiddleClick:
+			show();
+			break;
+		default:
+			break;
+	}
+}
+
+void MainWindow::onTrayMessageClicked() {
+	// Do something if messages are displayed
+}
+
 void MainWindow::onAPIsConnected() {
 	ui->actionRefresh->setEnabled(true);
 }
@@ -181,8 +227,37 @@ void MainWindow::onAboutToRefresh() {
 	ui->actionRefresh->setEnabled(false);
 }
 
+void MainWindow::onStartupBehaviourChanged(int startupBehaviour) {
+#ifdef QT_DEBUG
+	cout << "MainWindow> Startup behaviour changed: " << startupBehaviour << endl;
+#endif
+	pref->runAppAtStartup(startupBehaviour >= 1);
+}
+
+void MainWindow::onStyleChanged(int style) {
+#ifdef QT_DEBUG
+	cout << "MainWindow> Style changed: " << style << endl;
+#endif
+	switch (style) {
+		case Preferences::STYLE_DEFAULT:
+			qApp->setStyleSheet("");
+			break;
+		case Preferences::STYLE_DARK:
+			ui->statusBar->showMessage("Not implemented yet", 5000);
+			pref->setStyle(Preferences::STYLE_DEFAULT);
+			break;
+	}
+}
+
 void MainWindow::on_actionRefresh_triggered() {
     // Refresh function already connecting. UI can be updated from here
+}
+
+void MainWindow::on_actionSettings_triggered() {
+	if (dsettings == nullptr)
+		dsettings = new DSettings(this);
+	
+	dsettings->show();
 }
 
 void MainWindow::on_actionExit_triggered() {
