@@ -33,6 +33,8 @@ public:
 	void setRefreshTimeout(const int& refreshTimeout);
 	void initRefreshTimeout();
 	
+	void clear();
+	
 	static const int DONT_OPEN_AT_STARTUP = 0;
 	static const int OPEN_AT_STARTUP = 1;
 	static const int OPEN_AT_STARTUP_MINIMIZED = 2;

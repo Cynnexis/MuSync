@@ -45,8 +45,10 @@ int Preferences::getStartupBehavior() {
 }
 
 void Preferences::setStartupBehaviour(const int& startupBehaviour) {
-	settings.setValue("app/startupBehaviour", startupBehaviour);
-	emit startupBehaviourChanged(startupBehaviour);
+	if (startupBehaviour >= 0 && startupBehaviour <= 2) {
+		settings.setValue("app/startupBehaviour", startupBehaviour);
+		emit startupBehaviourChanged(startupBehaviour);
+	}
 }
 
 void Preferences::initStartupBehaviour() {
@@ -79,8 +81,10 @@ int Preferences::getStyle() {
 }
 
 void Preferences::setStyle(int style) {
-	settings.setValue("view/style", style);
-	emit styleChanged(style);
+	if (style >= 0 && style <= 1) {
+		settings.setValue("view/style", style);
+		emit styleChanged(style);
+	}
 }
 
 void Preferences::initStyle() {
@@ -91,7 +95,7 @@ int Preferences::getRefreshTimeout() {
 	bool ok = false;
 	int refreshTimeout = settings.value("network/refreshTimeout", 0).toInt(&ok);
 	
-	if (ok && refreshTimeout >= 1000)
+	if (ok && 1000 <= refreshTimeout && refreshTimeout <= 3600000)
 		return refreshTimeout;
 	else {
 		initRefreshTimeout();
@@ -100,7 +104,7 @@ int Preferences::getRefreshTimeout() {
 }
 
 void Preferences::setRefreshTimeout(const int& refreshTimeout) {
-	if (refreshTimeout >= 1000) {
+	if (1000 <= refreshTimeout && refreshTimeout <= 3600000) {
 		settings.setValue("network/refreshTimeout", refreshTimeout);
 		emit refreshTimeoutChanged(refreshTimeout);
 	}
@@ -108,4 +112,8 @@ void Preferences::setRefreshTimeout(const int& refreshTimeout) {
 
 void Preferences::initRefreshTimeout() {
 	setRefreshTimeout(5000); // 5s
+}
+
+void Preferences::clear() {
+	settings.clear();
 }
