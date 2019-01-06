@@ -14,6 +14,7 @@
 #include "preferences.h"
 #include "threading/autorefreshapi.h"
 #include "ui/dsettings.h"
+#include "ui/loadingoverlay.h"
 #include "r.h"
 
 using namespace std;
@@ -90,8 +91,10 @@ private:
 	QSystemTrayIcon* traySystem = nullptr;
 	QMenu* trayMenu = nullptr;
 	
-	AutoRefreshAPI* refreshAPIs;
-	QThread* threadAPIs;
+	LoadingOverlay* loadingOverlay = nullptr;
+	
+	AutoRefreshAPI* refreshAPIs = nullptr;
+	QThread* threadAPIs = nullptr;
 	Track currentTrack;
 	Lyrics currentLyrics;
 };

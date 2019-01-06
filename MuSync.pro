@@ -41,7 +41,9 @@ SOURCES += \
     models/lyrics.cpp \
     r.cpp \
     threading/autorefreshapi.cpp \
-    ui/dsettings.cpp
+    ui/dsettings.cpp \
+    ui/overlaywidget.cpp \
+    ui/loadingoverlay.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -58,7 +60,9 @@ HEADERS += \
     models/lyrics.h \
     r.h \
     threading/autorefreshapi.h \
-    ui/dsettings.h
+    ui/dsettings.h \
+    ui/overlaywidget.h \
+    ui/loadingoverlay.h
 
 FORMS += \
         mainwindow.ui \
