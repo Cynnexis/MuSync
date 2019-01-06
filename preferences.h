@@ -4,6 +4,8 @@
 #include <iostream>
 #include <QObject>
 #include <QSettings>
+#include <QApplication>
+
 
 using namespace std;
 
@@ -40,6 +42,8 @@ public:
 	int defaultRefreshTimeout();
 	void initRefreshTimeout();
 	bool isRefreshTimeoutValid(const int& refreshTimeout);
+	
+	void runAppAtStartup(bool runAtStartup);
 	
 	void clear();
 	

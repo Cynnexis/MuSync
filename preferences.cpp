@@ -149,6 +149,17 @@ bool Preferences::isRefreshTimeoutValid(const int& refreshTimeout) {
 	return 1000 <= refreshTimeout && refreshTimeout <= 3600000;
 }
 
+void Preferences::runAppAtStartup(bool runAtStartup) {
+	QSettings runSettings("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run",
+						  QSettings::NativeFormat);
+	if (runAtStartup) {
+		runSettings.setValue(qApp->applicationName(),
+							 QCoreApplication::applicationFilePath().replace('/', '\\'));
+	}
+	else
+		runSettings.remove(qApp->applicationName());
+}
+
 void Preferences::clear() {
 	settings.clear();
 }

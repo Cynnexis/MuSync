@@ -194,7 +194,7 @@ void MainWindow::onStartupBehaviourChanged(int startupBehaviour) {
 #ifdef QT_DEBUG
 	cout << "MainWindow> Startup behaviour changed: " << startupBehaviour << endl;
 #endif
-	// TODO: Changed something in the system
+	pref->runAppAtStartup(startupBehaviour >= 1);
 }
 
 void MainWindow::onStyleChanged(int style) {
