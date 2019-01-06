@@ -19,6 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(pref, SIGNAL(startupBehaviourChanged(int)), this, SLOT(onStartupBehaviourChanged(int)));
 	connect(pref, SIGNAL(styleChanged(int)), this, SLOT(onStyleChanged(int)));
 	
+	// Configure Tray System
 	traySystem = new QSystemTrayIcon(QIcon(R::getMuSyncIcon()), this);
 	connect(traySystem, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(onTrayClicked(QSystemTrayIcon::ActivationReason)));
 	connect(traySystem, SIGNAL(messageClicked()), this, SLOT(onTrayMessageClicked()));
@@ -80,6 +81,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	
 	// Connect `currentLyrics` to slots
 	connect(&currentLyrics, SIGNAL(lyricsChanged(QString)), this, SLOT(onLyricsLyricsChanged(QString)));
+	
+	// Configure Loading Overlay
+	loadingOverlay = new LoadingOverlay(this);
 }
 
 MainWindow::~MainWindow() {
@@ -121,6 +125,7 @@ void MainWindow::closeEvent(QCloseEvent* event) {
 }
 
 void MainWindow::getTrack(Track track) {
+	loadingOverlay->hide();
 	if (track.getName() != "" && currentTrack != track) {
 		currentTrack = track;
 		currentTrack.downloadThumbnail();
