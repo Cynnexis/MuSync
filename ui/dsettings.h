@@ -22,10 +22,10 @@ public:
 	~DSettings();
 	
 private slots:
-	void on_cb_startupBehavior_currentIndexChanged(const QString &arg1);
-	void on_cb_closeMinimizesApp_stateChanged(int arg1);
-	void on_cb_style_currentIndexChanged(const QString &arg1);
-	void on_sb_refreshTimeout_valueChanged(int arg1);
+	void on_cb_startupBehaviour_currentIndexChanged(int index);
+	void on_cb_closeMinimizesApp_stateChanged(int check);
+	void on_cb_style_currentIndexChanged(int index);
+	void on_sb_refreshTimeout_valueChanged(int timeout_s);
 	void on_pb_resetSettings_clicked();
 	
 private:

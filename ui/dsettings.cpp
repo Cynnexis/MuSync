@@ -13,12 +13,12 @@ DSettings::~DSettings() {
 	delete ui;
 }
 
-void DSettings::on_cb_startupBehavior_currentIndexChanged(const QString &arg1) {
+void DSettings::on_cb_startupBehaviour_currentIndexChanged(int index) {
     //
 }
 
-void DSettings::on_cb_closeMinimizesApp_stateChanged(int arg1) {
-	switch (arg1) {
+void DSettings::on_cb_closeMinimizesApp_stateChanged(int check) {
+	switch (check) {
 		case Qt::Checked:
 			//
 			break;
@@ -30,11 +30,11 @@ void DSettings::on_cb_closeMinimizesApp_stateChanged(int arg1) {
 	}
 }
 
-void DSettings::on_cb_style_currentIndexChanged(const QString &arg1) {
+void DSettings::on_cb_style_currentIndexChanged(int index) {
     //
 }
 
-void DSettings::on_sb_refreshTimeout_valueChanged(int arg1) {
+void DSettings::on_sb_refreshTimeout_valueChanged(int timeout_s) {
     //
 }
 
