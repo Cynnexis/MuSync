@@ -7,10 +7,39 @@ DSettings::DSettings(QWidget *parent) :
 	ui->setupUi(this);
 	
 	pref = Preferences::getInstance(this);
+	
+	onStartupBehaviourChanged(pref->getStartupBehavior());
+	onCloseButtonMinimizedChanged(pref->getCloseButtonMinimized());
+	onStyleChanged(pref->getStyle());
+	onRefreshTimeoutChanged(pref->getRefreshTimeout());
+	
+	connect(pref, SIGNAL(startupBehaviourChanged(int)), this, SLOT(onStartupBehaviourChanged(int)));
+	connect(pref, SIGNAL(closeButtonMinimizedChanged(bool)), this, SLOT(onCloseButtonMinimizedChanged(bool)));
+	connect(pref, SIGNAL(styleChanged(int)), this, SLOT(onStyleChanged(int)));
+	connect(pref, SIGNAL(refreshTimeoutChanged(int)), this, SLOT(onRefreshTimeoutChanged(int)));
 }
 
 DSettings::~DSettings() {
 	delete ui;
+}
+
+void DSettings::onStartupBehaviourChanged(int startupBehaviour) {
+	if (pref->isStartupBehaviourValid(startupBehaviour))
+		ui->cb_startupBehaviour->setCurrentIndex(startupBehaviour);
+}
+
+void DSettings::onCloseButtonMinimizedChanged(bool closeButtonMinimized) {
+	ui->cb_closeMinimizesApp->setCheckState(closeButtonMinimized ? Qt::Checked : Qt::Unchecked);
+}
+
+void DSettings::onStyleChanged(int style) {
+	if (pref->isStyleValid(style))
+		ui->cb_style->setCurrentIndex(style);
+}
+
+void DSettings::onRefreshTimeoutChanged(int refreshTimeout) {
+	if (pref->isRefreshTimeoutValid(refreshTimeout))
+		ui->sb_refreshTimeout->setValue(refreshTimeout/1000);
 }
 
 void DSettings::on_cb_startupBehaviour_currentIndexChanged(int index) {

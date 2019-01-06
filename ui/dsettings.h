@@ -22,6 +22,13 @@ public:
 	~DSettings();
 	
 private slots:
+	/* Preferences slots */
+	void onStartupBehaviourChanged(int startupBehaviour);
+	void onCloseButtonMinimizedChanged(bool closeButtonMinimized);
+	void onStyleChanged(int style);
+	void onRefreshTimeoutChanged(int refreshTimeout);
+	
+	/* Menu slots */
 	void on_cb_startupBehaviour_currentIndexChanged(int index);
 	void on_cb_closeMinimizesApp_stateChanged(int check);
 	void on_cb_style_currentIndexChanged(int index);

@@ -12,6 +12,7 @@
 #include "models/artist.h"
 #include "preferences.h"
 #include "threading/autorefreshapi.h"
+#include "ui/dsettings.h"
 #include "r.h"
 
 using namespace std;
@@ -51,10 +52,17 @@ private:
 	void showEvent(QShowEvent* event);
 	
 private slots:
+	/* API slots */
 	void onAPIsConnected();
 	void onAboutToRefresh();
 	
+	/* Preferences slots */
+	void onStartupBehaviourChanged(int startupBehaviour);
+	void onStyleChanged(int style);
+	
+	/* Menu slots */
 	void on_actionRefresh_triggered();
+	void on_actionSettings_triggered();
 	void on_actionExit_triggered();
 	
 	void on_actionOpenTrackOnSpotifyApp_triggered();
@@ -70,6 +78,7 @@ private:
 	Ui::MainWindow *ui = nullptr;
 	Preferences* pref = nullptr;
 	OAuthDialog* webdialog = nullptr;
+	DSettings* dsettings = nullptr;
 	
 	AutoRefreshAPI* refreshAPIs;
 	QThread* threadAPIs;

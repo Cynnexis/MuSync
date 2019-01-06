@@ -5,6 +5,9 @@ Preferences* Preferences::pref;
 Preferences::Preferences(QObject *parent) : QObject(parent) {
 	if (!isFirstLaunch()) {
 		// Init
+		initStartupBehaviour();
+		initCloseButtonMinimized();
+		initStyle();
 		initRefreshTimeout();
 	
 		// Last
@@ -33,10 +36,10 @@ void Preferences::initFirstLaunch() {
 }
 
 int Preferences::getStartupBehavior() {
-	bool success = false;
-	int startupBehaviour = settings.value("app/startupBehaviour", DONT_OPEN_AT_STARTUP).toInt(&success);
+	bool ok = false;
+	int startupBehaviour = settings.value("app/startupBehaviour", defaultStartupBehaviour()).toInt(&ok);
 	
-	if (success && startupBehaviour >= 0 && startupBehaviour <= 2)
+	if (ok && isStartupBehaviourValid(startupBehaviour))
 		return startupBehaviour;
 	else {
 		initStartupBehaviour();
@@ -45,18 +48,26 @@ int Preferences::getStartupBehavior() {
 }
 
 void Preferences::setStartupBehaviour(const int& startupBehaviour) {
-	if (startupBehaviour >= 0 && startupBehaviour <= 2) {
+	if (isStartupBehaviourValid(startupBehaviour)) {
 		settings.setValue("app/startupBehaviour", startupBehaviour);
 		emit startupBehaviourChanged(startupBehaviour);
 	}
 }
 
-void Preferences::initStartupBehaviour() {
-	setStartupBehaviour(DONT_OPEN_AT_STARTUP);
+int Preferences::defaultStartupBehaviour() {
+	return DONT_OPEN_AT_STARTUP;
 }
 
-bool Preferences::doesCloseButtonMinimized() {
-	return settings.value("app/closeButtonMinimized", false).toBool();
+void Preferences::initStartupBehaviour() {
+	setStartupBehaviour(defaultStartupBehaviour());
+}
+
+bool Preferences::isStartupBehaviourValid(const int& startupBehaviour) {
+	return startupBehaviour >= 0 && startupBehaviour <= 2;
+}
+
+bool Preferences::getCloseButtonMinimized() {
+	return settings.value("app/closeButtonMinimized", defaultCloseButtonMinimized()).toBool();
 }
 
 void Preferences::setCloseButtonMinimized(const bool& closeButtonMinimized) {
@@ -64,15 +75,19 @@ void Preferences::setCloseButtonMinimized(const bool& closeButtonMinimized) {
 	emit closeButtonMinimizedChanged(closeButtonMinimized);
 }
 
+bool Preferences::defaultCloseButtonMinimized() {
+	return false;
+}
+
 void Preferences::initCloseButtonMinimized() {
-	setCloseButtonMinimized(false);
+	setCloseButtonMinimized(defaultCloseButtonMinimized());
 }
 
 int Preferences::getStyle() {
-	bool success = false;
-	int style = settings.value("view/style", STYLE_DEFAULT).toInt(&success);
+	bool ok = false;
+	int style = settings.value("view/style", defaultStyle()).toInt(&ok);
 	
-	if (success && style >= 0 && style <= 1)
+	if (ok && isStyleValid(style))
 		return style;
 	else {
 		initStyle();
@@ -80,22 +95,30 @@ int Preferences::getStyle() {
 	}
 }
 
-void Preferences::setStyle(int style) {
-	if (style >= 0 && style <= 1) {
+void Preferences::setStyle(const int& style) {
+	if (isStyleValid(style)) {
 		settings.setValue("view/style", style);
 		emit styleChanged(style);
 	}
 }
 
+int Preferences::defaultStyle() {
+	return STYLE_DEFAULT;
+}
+
 void Preferences::initStyle() {
-	setStyle(STYLE_DEFAULT);
+	setStyle(defaultStyle());
+}
+
+bool Preferences::isStyleValid(const int& style) {
+	return 0 <= style && style <= 1;
 }
 
 int Preferences::getRefreshTimeout() {
 	bool ok = false;
-	int refreshTimeout = settings.value("network/refreshTimeout", 0).toInt(&ok);
+	int refreshTimeout = settings.value("network/refreshTimeout", defaultRefreshTimeout()).toInt(&ok);
 	
-	if (ok && 1000 <= refreshTimeout && refreshTimeout <= 3600000)
+	if (ok && 1000 <= isRefreshTimeoutValid(refreshTimeout))
 		return refreshTimeout;
 	else {
 		initRefreshTimeout();
@@ -104,14 +127,22 @@ int Preferences::getRefreshTimeout() {
 }
 
 void Preferences::setRefreshTimeout(const int& refreshTimeout) {
-	if (1000 <= refreshTimeout && refreshTimeout <= 3600000) {
+	if (isRefreshTimeoutValid(refreshTimeout)) {
 		settings.setValue("network/refreshTimeout", refreshTimeout);
 		emit refreshTimeoutChanged(refreshTimeout);
 	}
 }
 
+int Preferences::defaultRefreshTimeout() {
+	return 5000; // 5s
+}
+
 void Preferences::initRefreshTimeout() {
-	setRefreshTimeout(5000); // 5s
+	setRefreshTimeout(defaultRefreshTimeout());
+}
+
+bool Preferences::isRefreshTimeoutValid(const int& refreshTimeout) {
+	return 1000 <= refreshTimeout && refreshTimeout <= 3600000;
 }
 
 void Preferences::clear() {

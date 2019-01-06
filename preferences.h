@@ -19,19 +19,26 @@ public:
 	
 	int getStartupBehavior();
 	void setStartupBehaviour(const int& startupBehaviour);
+	int defaultStartupBehaviour();
 	void initStartupBehaviour();
+	bool isStartupBehaviourValid(const int& startupBehaviour);
 	
-	bool doesCloseButtonMinimized();
+	bool getCloseButtonMinimized();
 	void setCloseButtonMinimized(const bool& closeButtonMinimized);
+	bool defaultCloseButtonMinimized();
 	void initCloseButtonMinimized();
 	
 	int getStyle();
-	void setStyle(int style);
+	void setStyle(const int& style);
+	int defaultStyle();
 	void initStyle();
+	bool isStyleValid(const int& style);
 	
 	int getRefreshTimeout();
 	void setRefreshTimeout(const int& refreshTimeout);
+	int defaultRefreshTimeout();
 	void initRefreshTimeout();
+	bool isRefreshTimeoutValid(const int& refreshTimeout);
 	
 	void clear();
 	

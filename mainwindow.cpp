@@ -16,11 +16,15 @@ MainWindow::MainWindow(QWidget *parent) :
 	
 	pref = Preferences::getInstance(this);
 	
+	connect(pref, SIGNAL(startupBehaviourChanged(int)), this, SLOT(onStartupBehaviourChanged(int)));
+	connect(pref, SIGNAL(styleChanged(int)), this, SLOT(onStyleChanged(int)));
+	
 	// Change the the name of "File" menu to the application name
 	ui->menuFile->setTitle(qApp->applicationName());
 	
 	// Add some icons
 	ui->actionRefresh->setIcon(R::getRefresh());
+	ui->actionSettings->setIcon(R::getSettings());
 	ui->actionExit->setIcon(R::getPower());
 	ui->actionOpenTrackOnSpotifyWeb->setIcon(R::getBrowser(R::getSpotifyColor()));
 	ui->actionOpenAlbumOnSpotifyWeb->setIcon(R::getBrowser(R::getSpotifyColor()));
@@ -181,8 +185,31 @@ void MainWindow::onAboutToRefresh() {
 	ui->actionRefresh->setEnabled(false);
 }
 
+void MainWindow::onStartupBehaviourChanged(int startupBehaviour) {
+	// TODO: Changed something in the system
+}
+
+void MainWindow::onStyleChanged(int style) {
+	switch (style) {
+		case Preferences::STYLE_DEFAULT:
+			qApp->setStyleSheet("");
+			break;
+		case Preferences::STYLE_DARK:
+			ui->statusBar->showMessage("Not implemented yet", 5000);
+			pref->setStyle(Preferences::STYLE_DEFAULT);
+			break;
+	}
+}
+
 void MainWindow::on_actionRefresh_triggered() {
     // Refresh function already connecting. UI can be updated from here
+}
+
+void MainWindow::on_actionSettings_triggered() {
+    if (dsettings == nullptr)
+		dsettings = new DSettings(this);
+	
+	dsettings->show();
 }
 
 void MainWindow::on_actionExit_triggered() {
