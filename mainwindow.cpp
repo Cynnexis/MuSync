@@ -88,11 +88,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow() {
 	// Stop background thread
-	if (refreshAPIs != nullptr)
-		refreshAPIs->stop();
-	
-	if (threadAPIs != nullptr && threadAPIs->isRunning())
-		threadAPIs->exit();
+	stopThreads();
 	
 	// Delete graphic elements
 	delete ui;
@@ -115,13 +111,27 @@ void MainWindow::changeTitle(Track track) {
 		changeTitle(track.toString());
 }
 
+void MainWindow::stopThreads() {
+	if (refreshAPIs != nullptr && refreshAPIs->isRunning()) {
+		refreshAPIs->stop();
+		QThread::sleep(1);
+	}
+	
+	if (threadAPIs != nullptr && threadAPIs->isRunning()) {
+		threadAPIs->exit();
+		threadAPIs->wait();
+	}
+}
+
 void MainWindow::closeEvent(QCloseEvent* event) {
 	if (pref->getCloseButtonMinimized()) {
 		hide();
 		event->ignore();
 	}
-	else
+	else {
+		stopThreads();
 		event->accept();
+	}
 }
 
 void MainWindow::getTrack(Track track) {
@@ -240,17 +250,7 @@ void MainWindow::onStartupBehaviourChanged(int startupBehaviour) {
 }
 
 void MainWindow::onStyleChanged(int style) {
-#ifdef QT_DEBUG
-	cout << "MainWindow> Style changed: " << style << endl;
-#endif
-	switch (style) {
-		case Preferences::STYLE_DEFAULT:
-			qApp->setStyleSheet("");
-			break;
-		case Preferences::STYLE_DARK:
-			QMessageBox::information(this, "Restart required", "Please restart the application to apply the style.");
-			break;
-	}
+	// Style is changed (from Preferences)
 }
 
 void MainWindow::on_actionRefresh_triggered() {

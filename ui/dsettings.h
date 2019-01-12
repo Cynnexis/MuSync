@@ -6,6 +6,7 @@
 #include <QMessageBox>
 
 #include "preferences.h"
+#include "r.h"
 
 using namespace std;
 
@@ -38,6 +39,8 @@ private slots:
 private:
 	Ui::DSettings *ui;
 	Preferences* pref;
+	
+	bool isInitialization = true;
 };
 
 #endif // DSETTINGS_H
