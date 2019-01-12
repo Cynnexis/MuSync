@@ -14,12 +14,8 @@ int main(int argc, char *argv[])
 	
 	Preferences* pref = Preferences::getInstance();
 	
-	if (pref->getStyle() == Preferences::STYLE_DARK) {
-#ifdef QT_DEBUG
-		cout << "Dark style detected" << endl;
-#endif
+	if (pref->getStyle() == Preferences::STYLE_DARK)
 		a.setStyle(new DarkStyle());
-	}
 	
 	MainWindow w;
 	FramelessWindow *framelessWindow;
