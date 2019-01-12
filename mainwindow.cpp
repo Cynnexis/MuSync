@@ -19,6 +19,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(pref, SIGNAL(startupBehaviourChanged(int)), this, SLOT(onStartupBehaviourChanged(int)));
 	connect(pref, SIGNAL(styleChanged(int)), this, SLOT(onStyleChanged(int)));
 	
+	// Disable the menu until the loading screen is gone
+	ui->menuBar->setEnabled(false);
+	
 	// Configure Tray System
 	traySystem = new QSystemTrayIcon(QIcon(R::getMuSyncIcon()), this);
 	connect(traySystem, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(onTrayClicked(QSystemTrayIcon::ActivationReason)));
@@ -48,6 +51,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	//api = new WebAPI();
 	threadAPIs = new QThread(this);
 	refreshAPIs = new AutoRefreshAPI();
+	
+	connect(this, SIGNAL(windowAboutToBeClosed()), refreshAPIs, SLOT(stop()));
 	
 	refreshAPIs->moveToThread(threadAPIs);
 	connect(threadAPIs, &QThread::started, refreshAPIs, &AutoRefreshAPI::refresh);
@@ -88,11 +93,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow() {
 	// Stop background thread
-	if (refreshAPIs != nullptr)
-		refreshAPIs->stop();
-	
-	if (threadAPIs != nullptr && threadAPIs->isRunning())
-		threadAPIs->exit();
+	stopThreads();
 	
 	// Delete graphic elements
 	delete ui;
@@ -115,17 +116,36 @@ void MainWindow::changeTitle(Track track) {
 		changeTitle(track.toString());
 }
 
+void MainWindow::stopThreads() {
+	if (refreshAPIs != nullptr && refreshAPIs->isRunning()) {
+		emit windowAboutToBeClosed();
+		QThread::sleep(1);
+	}
+	
+	if (threadAPIs != nullptr && threadAPIs->isRunning()) {
+		threadAPIs->exit();
+		threadAPIs->wait();
+	}
+}
+
 void MainWindow::closeEvent(QCloseEvent* event) {
 	if (pref->getCloseButtonMinimized()) {
 		hide();
 		event->ignore();
 	}
-	else
+	else {
+		stopThreads();
 		event->accept();
+	}
 }
 
 void MainWindow::getTrack(Track track) {
-	loadingOverlay->hide();
+	// Hide the loading screen & re-enable the menu bar
+	if (!loadingOverlay->isHidden()) {
+		loadingOverlay->hide();
+		ui->menuBar->setEnabled(true);
+	}
+	
 	if (track.getName() != "" && currentTrack != track) {
 		currentTrack = track;
 		currentTrack.downloadThumbnail();
@@ -240,18 +260,7 @@ void MainWindow::onStartupBehaviourChanged(int startupBehaviour) {
 }
 
 void MainWindow::onStyleChanged(int style) {
-#ifdef QT_DEBUG
-	cout << "MainWindow> Style changed: " << style << endl;
-#endif
-	switch (style) {
-		case Preferences::STYLE_DEFAULT:
-			qApp->setStyleSheet("");
-			break;
-		case Preferences::STYLE_DARK:
-			ui->statusBar->showMessage("Not implemented yet", 5000);
-			pref->setStyle(Preferences::STYLE_DEFAULT);
-			break;
-	}
+	// Style is changed (from Preferences)
 }
 
 void MainWindow::on_actionRefresh_triggered() {

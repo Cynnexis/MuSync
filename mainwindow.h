@@ -34,6 +34,7 @@ public:
 private:
 	void changeTitle(QString title = "");
 	void changeTitle(Track track);
+	void stopThreads();
 	
 protected:
 	void closeEvent(QCloseEvent* event) override;
@@ -82,6 +83,9 @@ private slots:
 	
 	void on_actionAboutMuSync_triggered();
 	void on_actionAboutQt_triggered();
+	
+signals:
+	void windowAboutToBeClosed();
 	
 private:
 	Ui::MainWindow *ui = nullptr;

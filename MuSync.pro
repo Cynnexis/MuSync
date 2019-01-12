@@ -93,5 +93,6 @@ DEPENDPATH += "C:/Program Files/OpenSSL-Win64/include"
 
 win32: LIBS += -L"$$PWD/lib/SSL/" -lopenssl -llibeay32 -llibssl -llibcrypto
 
-#INCLUDEPATH += "C:\Qt\5.12.0\msvc2017_64\include\QtWebEngineWidgets"
-#DEPENDPATH += "C:\Qt\5.12.0\msvc2017_64\include\QtWebEngineWidgets"
+# Add Qt-Frameless-Window-DarkStyle project
+
+include($$PWD/lib/DarkStyle/frameless_window_dark.pri)

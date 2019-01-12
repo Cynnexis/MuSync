@@ -1,7 +1,9 @@
 #include "mainwindow.h"
 #include <QApplication>
 #include <QCoreApplication>
-//#include <QtWebEngine/qtwebengineglobal.h>
+
+#include "DarkStyle.h"
+#include "framelesswindow/framelesswindow.h"
 
 int main(int argc, char *argv[])
 {
@@ -10,15 +12,24 @@ int main(int argc, char *argv[])
 	QCoreApplication::setApplicationName("MuSync");
 	QCoreApplication::setOrganizationName("MuSync");
 	
-	// Initialize the web engine
-	//QtWebEngine::initialize();
+	Preferences* pref = Preferences::getInstance();
+	
+	if (pref->getStyle() == Preferences::STYLE_DARK)
+		a.setStyle(new DarkStyle());
 	
 	MainWindow w;
-	w.show();
-	/*WebAPI api;
-	api.connectToSpotify();
-	api.connectToGenius();
-	cout << api.getLyrics().toStdString() << endl;*/
+	FramelessWindow *framelessWindow;
+	
+	if (pref->getStyle() == Preferences::STYLE_DARK) {
+		framelessWindow = new FramelessWindow();
+		framelessWindow->setContent(&w);
+		framelessWindow->setWindowTitle(w.windowTitle());
+		framelessWindow->setWindowIcon(w.windowIcon());
+		framelessWindow->resize(w.size().width() + 100, w.size().height() + 100);
+		framelessWindow->show();
+	}
+	else
+		w.show();
 	
 	return a.exec();
 }

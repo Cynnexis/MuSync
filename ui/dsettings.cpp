@@ -12,6 +12,8 @@ DSettings::DSettings(QWidget *parent) :
 	onCloseButtonMinimizedChanged(pref->getCloseButtonMinimized());
 	onStyleChanged(pref->getStyle());
 	onRefreshTimeoutChanged(pref->getRefreshTimeout());
+	
+	isInitialization = false;
 }
 
 DSettings::~DSettings() {
@@ -40,6 +42,14 @@ void DSettings::onStyleChanged(int style) {
 		disconnect(pref, SIGNAL(styleChanged(int)), this, SLOT(onStyleChanged(int)));
 		ui->cb_style->setCurrentIndex(style);
 		connect(pref, SIGNAL(styleChanged(int)), this, SLOT(onStyleChanged(int)));
+		
+		if (!isInitialization) {
+			QMessageBox message(this);
+			message.setWindowTitle("Restart required");
+			message.setWindowIcon(R::getMuSyncIcon());
+			message.setText("Please restart the application to apply the style.");
+			message.exec();
+		}
 	}
 }
 

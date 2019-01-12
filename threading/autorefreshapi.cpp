@@ -67,3 +67,11 @@ void AutoRefreshAPI::stop() {
 	if (t_refresh != nullptr)
 		t_refresh->stop();
 }
+
+bool AutoRefreshAPI::isRunning()
+{
+	if (t_refresh != nullptr)
+		return t_refresh->isActive();
+	else
+		return false;
+}
