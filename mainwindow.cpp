@@ -49,6 +49,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	threadAPIs = new QThread(this);
 	refreshAPIs = new AutoRefreshAPI();
 	
+	connect(this, SIGNAL(windowAboutToBeClosed()), refreshAPIs, SLOT(stop()));
+	
 	refreshAPIs->moveToThread(threadAPIs);
 	connect(threadAPIs, &QThread::started, refreshAPIs, &AutoRefreshAPI::refresh);
 	connect(threadAPIs, &QThread::finished, [=]() {
@@ -113,7 +115,7 @@ void MainWindow::changeTitle(Track track) {
 
 void MainWindow::stopThreads() {
 	if (refreshAPIs != nullptr && refreshAPIs->isRunning()) {
-		refreshAPIs->stop();
+		emit windowAboutToBeClosed();
 		QThread::sleep(1);
 	}
 	

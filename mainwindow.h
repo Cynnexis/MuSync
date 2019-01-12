@@ -84,6 +84,9 @@ private slots:
 	void on_actionAboutMuSync_triggered();
 	void on_actionAboutQt_triggered();
 	
+signals:
+	void windowAboutToBeClosed();
+	
 private:
 	Ui::MainWindow *ui = nullptr;
 	Preferences* pref = nullptr;
