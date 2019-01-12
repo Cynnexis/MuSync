@@ -19,6 +19,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(pref, SIGNAL(startupBehaviourChanged(int)), this, SLOT(onStartupBehaviourChanged(int)));
 	connect(pref, SIGNAL(styleChanged(int)), this, SLOT(onStyleChanged(int)));
 	
+	// Disable the menu until the loading screen is gone
+	ui->menuBar->setEnabled(false);
+	
 	// Configure Tray System
 	traySystem = new QSystemTrayIcon(QIcon(R::getMuSyncIcon()), this);
 	connect(traySystem, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(onTrayClicked(QSystemTrayIcon::ActivationReason)));
@@ -137,7 +140,12 @@ void MainWindow::closeEvent(QCloseEvent* event) {
 }
 
 void MainWindow::getTrack(Track track) {
-	loadingOverlay->hide();
+	// Hide the loading screen & re-enable the menu bar
+	if (!loadingOverlay->isHidden()) {
+		loadingOverlay->hide();
+		ui->menuBar->setEnabled(true);
+	}
+	
 	if (track.getName() != "" && currentTrack != track) {
 		currentTrack = track;
 		currentTrack.downloadThumbnail();
