@@ -22,13 +22,15 @@ int main(int argc, char *argv[])
 	}
 	
 	MainWindow w;
+	FramelessWindow *framelessWindow;
 	
 	if (pref->getStyle() == Preferences::STYLE_DARK) {
-		FramelessWindow framelessWindow;
-		framelessWindow.setContent(&w);
-		framelessWindow.setWindowTitle(w.windowTitle());
-		framelessWindow.setWindowIcon(w.windowIcon());
-		framelessWindow.show();
+		framelessWindow = new FramelessWindow();
+		framelessWindow->setContent(&w);
+		framelessWindow->setWindowTitle(w.windowTitle());
+		framelessWindow->setWindowIcon(w.windowIcon());
+		framelessWindow->resize(w.size().width() + 100, w.size().height() + 100);
+		framelessWindow->show();
 	}
 	else
 		w.show();
