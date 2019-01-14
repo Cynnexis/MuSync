@@ -8,6 +8,7 @@
 
 #include "oauth/webapi.h"
 #include "preferences.h"
+#include "models/track.h"
 
 using namespace std;
 
@@ -53,6 +54,8 @@ private:
 	QTimer* t_refresh = nullptr;
 	
 	Preferences* pref;
+	
+	Track lastTrackFetched;
 };
 
 #endif // AUTOREFRESHAPI_H
