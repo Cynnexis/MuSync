@@ -72,6 +72,7 @@ private slots:
 	
 	/* Menu slots */	
 	void on_actionRefresh_triggered();
+	void on_actionResumePause_triggered();
 	void on_actionSettings_triggered();
 	void on_actionExit_triggered();
 	
@@ -86,8 +87,13 @@ private slots:
 	
 signals:
 	void windowAboutToBeClosed();
+	void pauseRequest();
+	void resumeRequest();
 	
 private:
+	static const int RESUMED = 0;
+	static const int PAUSED = 1;
+	
 	Ui::MainWindow *ui = nullptr;
 	Preferences* pref = nullptr;
 	OAuthDialog* webdialog = nullptr;
@@ -101,6 +107,8 @@ private:
 	QThread* threadAPIs = nullptr;
 	Track currentTrack;
 	Lyrics currentLyrics;
+	
+	int refreshStatus = RESUMED;
 };
 
 #endif // MAINWINDOW_H

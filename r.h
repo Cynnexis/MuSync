@@ -70,6 +70,26 @@ namespace R
 	QPixmap getDown();
 	QPixmap getDown(const QColor& tint);
 	
+	QString getPausePath();
+	QPixmap getPause();
+	QPixmap getPause(const QColor& tint);
+	
+	QString getPlayPath();
+	QPixmap getPlay();
+	QPixmap getPlay(const QColor& tint);
+	
+	QString getAlbumPath();
+	QPixmap getAlbum();
+	QPixmap getAlbum(const QColor& tint);
+	
+	QString getMusicPath();
+	QPixmap getMusic();
+	QPixmap getMusic(const QColor& tint);
+	
+	QString getActorsPath();
+	QPixmap getActors();
+	QPixmap getActors(const QColor& tint);
+	
 	QPixmap getSvg(const QString& path);
 	QPixmap getSvg(const QString& path, const QColor& tint);
 	

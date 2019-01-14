@@ -17,5 +17,10 @@
         <file alias="settings">res/svg/settings.svg</file>
         <file alias="down">res/svg/down.svg</file>
         <file alias="up">res/svg/up.svg</file>
+        <file alias="pause">res/svg/pause.svg</file>
+        <file alias="play">res/svg/play.svg</file>
+        <file alias="album">res/svg/album.svg</file>
+        <file alias="actors">res/svg/actors.svg</file>
+        <file alias="music">res/svg/music.svg</file>
     </qresource>
 </RCC>

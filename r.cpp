@@ -152,6 +152,66 @@ QPixmap R::getDown(const QColor& tint) {
 	return getSvg(getDownPath(), tint);
 }
 
+QString R::getPausePath() {
+	return ":/svg/pause";
+}
+
+QPixmap R::getPause() {
+	return getSvg(getPausePath(), getPrimaryColor());
+}
+
+QPixmap R::getPause(const QColor& tint) {
+	return getSvg(getPausePath(), tint);
+}
+
+QString R::getPlayPath() {
+	return ":/svg/play";
+}
+
+QPixmap R::getPlay() {
+	return getSvg(getPlayPath(), getPrimaryColor());
+}
+
+QPixmap R::getPlay(const QColor& tint) {
+	return getSvg(getPlayPath(), tint);
+}
+
+QString R::getAlbumPath() {
+	return ":/svg/album";
+}
+
+QPixmap R::getAlbum() {
+	return getSvg(getAlbumPath(), getPrimaryColor());
+}
+
+QPixmap R::getAlbum(const QColor& tint) {
+	return getSvg(getAlbumPath(), tint);
+}
+
+QString R::getMusicPath() {
+	return ":/svg/music";
+}
+
+QPixmap R::getMusic() {
+	return getSvg(getMusicPath(), getPrimaryColor());
+}
+
+QPixmap R::getMusic(const QColor& tint) {
+	return getSvg(getMusicPath(), tint);
+}
+
+QString R::getActorsPath() {
+	return ":/svg/actors";
+}
+
+QPixmap R::getActors() {
+	return getSvg(getActorsPath(), getPrimaryColor());
+}
+
+QPixmap R::getActors(const QColor& tint) {
+	return getSvg(getMusicPath(), tint);
+}
+
 QPixmap R::getSvg(const QString& path) {
 	return QPixmap(path);
 }
