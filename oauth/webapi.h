@@ -42,6 +42,14 @@ public:
 	void connectToGenius();
 	Lyrics getLyrics(const Track& track);
 	Lyrics getLyrics();
+	QList<Lyrics> getLyricsList(const Track& track);
+	QList<Lyrics> getLyricsList();
+	
+	QJsonArray getSearchList(const Track& track);
+	
+	QString getHtmlLyrics(QString lyricsPath);
+	
+	Lyrics parseLyrics(QString html);
 	
 signals:
 	void spotifyLinkedChanged(bool);
@@ -57,6 +65,7 @@ signals:
 	void geniusOpenBrowser(QUrl);
 	void geniusCloseBrowser();
 	void geniusLyricsFetched(Lyrics);
+	void geniusLyricsListFetched(QList<Lyrics>);
 	
 private slots:
 	void onSpotifyLinkedChanged();
