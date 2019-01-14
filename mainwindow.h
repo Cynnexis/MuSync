@@ -6,6 +6,7 @@
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QAction>
+#include <QComboBox>
 #include <QSystemTrayIcon>
 
 #include "oauth/oauthdialog.h"
@@ -70,7 +71,9 @@ private slots:
 	void onStartupBehaviourChanged(int startupBehaviour);
 	void onStyleChanged(int style);
 	
-	/* Menu slots */	
+	/* Menu slots */
+	void on_cb_geniusResults_currentIndexChanged(int index);
+	
 	void on_actionRefresh_triggered();
 	void on_actionResumePause_triggered();
 	void on_actionSettings_triggered();
@@ -102,6 +105,7 @@ private:
 	QMenu* trayMenu = nullptr;
 	
 	LoadingOverlay* loadingOverlay = nullptr;
+	QComboBox* cb_geniusResults;
 	
 	AutoRefreshAPI* refreshAPIs = nullptr;
 	QThread* threadAPIs = nullptr;

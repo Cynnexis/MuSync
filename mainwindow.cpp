@@ -19,6 +19,14 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(pref, SIGNAL(startupBehaviourChanged(int)), this, SLOT(onStartupBehaviourChanged(int)));
 	connect(pref, SIGNAL(styleChanged(int)), this, SLOT(onStyleChanged(int)));
 	
+	cb_geniusResults = new QComboBox(this);
+	cb_geniusResults->setEditable(false);
+	
+	connect(cb_geniusResults, SIGNAL(currentIndexChanged(int)), this, SLOT(on_cb_geniusResults_currentIndexChanged(int)));
+	
+	ui->mainToolBar->addSeparator();
+	ui->mainToolBar->addWidget(cb_geniusResults);
+	
 	// Disable the menu until the loading screen is gone
 	ui->menuBar->setEnabled(false);
 	
@@ -273,6 +281,10 @@ void MainWindow::onStartupBehaviourChanged(int startupBehaviour) {
 
 void MainWindow::onStyleChanged(int style) {
 	// Style is changed (from Preferences)
+}
+
+void MainWindow::on_cb_geniusResults_currentIndexChanged(int index) {
+	// TODO: Handle the event when an item from cb_geniusResults is chosen
 }
 
 void MainWindow::on_actionRefresh_triggered() {
