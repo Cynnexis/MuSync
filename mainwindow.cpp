@@ -29,6 +29,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	
 	trayMenu = new QMenu(qApp->applicationName(), this);
 	trayMenu->addAction(ui->actionRefresh);
+	trayMenu->addAction(ui->actionResumePause);
 	trayMenu->addSeparator();
 	trayMenu->addAction(ui->actionExit);
 	
@@ -39,7 +40,11 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->menuFile->setTitle(qApp->applicationName());
 	
 	// Add some icons
+	ui->menuTrack->setIcon(R::getMusic());
+	ui->menuArtists->setIcon(R::getActors());
+	ui->menuAlbum->setIcon(R::getAlbum());
 	ui->actionRefresh->setIcon(R::getRefresh());
+	ui->actionResumePause->setIcon(R::getPause());
 	ui->actionSettings->setIcon(R::getSettings());
 	ui->actionExit->setIcon(R::getPower());
 	ui->actionOpenTrackOnSpotifyWeb->setIcon(R::getBrowser(R::getSpotifyColor()));
@@ -53,6 +58,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	refreshAPIs = new AutoRefreshAPI();
 	
 	connect(this, SIGNAL(windowAboutToBeClosed()), refreshAPIs, SLOT(stop()));
+	connect(this, SIGNAL(pauseRequest()), refreshAPIs, SLOT(pause()));
+	connect(this, SIGNAL(resumeRequest()), refreshAPIs, SLOT(resume()));
 	
 	refreshAPIs->moveToThread(threadAPIs);
 	connect(threadAPIs, &QThread::started, refreshAPIs, &AutoRefreshAPI::refresh);
@@ -153,7 +160,9 @@ void MainWindow::getTrack(Track track) {
 }
 
 void MainWindow::getLyrics(Lyrics lyrics) {
+	ui->mainToolBar->setEnabled(true);
 	ui->actionRefresh->setEnabled(true);
+	ui->actionResumePause->setEnabled(true);
 	if (lyrics.getLyrics() != "" && currentLyrics != lyrics)
 		currentLyrics = lyrics;
 }
@@ -245,11 +254,14 @@ void MainWindow::onTrayMessageClicked() {
 }
 
 void MainWindow::onAPIsConnected() {
+	ui->mainToolBar->setEnabled(true);
 	ui->actionRefresh->setEnabled(true);
+	ui->actionResumePause->setEnabled(true);
 }
 
 void MainWindow::onAboutToRefresh() {
 	ui->actionRefresh->setEnabled(false);
+	ui->actionResumePause->setEnabled(false);
 }
 
 void MainWindow::onStartupBehaviourChanged(int startupBehaviour) {
@@ -265,6 +277,23 @@ void MainWindow::onStyleChanged(int style) {
 
 void MainWindow::on_actionRefresh_triggered() {
     // Refresh function already connecting. UI can be updated from here
+}
+
+void MainWindow::on_actionResumePause_triggered() {
+	if (refreshStatus == RESUMED) {
+		ui->actionResumePause->setText(tr("Resume Sync", "Resume/Pause button"));
+		ui->actionResumePause->setToolTip(ui->actionResumePause->text());
+		ui->actionResumePause->setIcon(R::getPlay());
+		refreshStatus = PAUSED;
+		emit pauseRequest();
+	}
+	else {
+		ui->actionResumePause->setText(tr("Pause Sync", "Resume/Pause button"));
+		ui->actionResumePause->setToolTip(ui->actionResumePause->text());
+		ui->actionResumePause->setIcon(R::getPause());
+		refreshStatus = RESUMED;
+		emit resumeRequest();
+	}
 }
 
 void MainWindow::on_actionSettings_triggered() {

@@ -138,7 +138,7 @@ void Preferences::setRefreshTimeout(const int& refreshTimeout) {
 }
 
 int Preferences::defaultRefreshTimeout() {
-	return 5000; // 5s
+	return 10000; // 10s
 }
 
 void Preferences::initRefreshTimeout() {
