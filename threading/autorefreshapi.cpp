@@ -47,7 +47,11 @@ void AutoRefreshAPI::refresh() {
 #endif
 		emit aboutToRefresh();
 		t_refresh->stop();
-		api->getLyrics();
+		Track track = api->getPlayingTrack();
+		if (track != lastTrackFetched) {
+			lastTrackFetched = track;
+			api->getLyrics();
+		}
 		t_refresh->start(pref->getRefreshTimeout());
 		emit refreshFinished();
 	}
