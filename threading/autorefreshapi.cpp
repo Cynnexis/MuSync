@@ -19,6 +19,7 @@ AutoRefreshAPI::AutoRefreshAPI(QObject* parent) : QObject(parent) {
 	connect(api, SIGNAL(geniusOpenBrowser(QUrl)), this, SIGNAL(geniusOpenBrowser(QUrl)));
 	connect(api, SIGNAL(geniusCloseBrowser()), this, SIGNAL(geniusCloseBrowser()));
 	connect(api, SIGNAL(geniusLyricsFetched(Lyrics)), this, SIGNAL(geniusLyricsFetched(Lyrics)));
+	connect(api, SIGNAL(geniusLyricsListFetched(QList<Lyrics>)), this, SIGNAL(geniusLyricsListFetched(QList<Lyrics>)));
 }
 
 void AutoRefreshAPI::refresh() {
@@ -50,7 +51,7 @@ void AutoRefreshAPI::refresh() {
 		Track track = api->getPlayingTrack();
 		if (track != lastTrackFetched) {
 			lastTrackFetched = track;
-			api->getLyrics();
+			api->getLyricsList(track);
 		}
 		t_refresh->start(pref->getRefreshTimeout());
 		emit refreshFinished();

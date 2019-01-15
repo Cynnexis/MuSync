@@ -11,6 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	qRegisterMetaType<Artist>("Artist");
 	qRegisterMetaType<Lyrics>("Lyrics");
 	qRegisterMetaType<QArtistList>("QArtistList");
+	qRegisterMetaType<QList<Lyrics>>("QList<Lyrics>");
 	
 	changeTitle();
 	
@@ -80,7 +81,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->actionRefresh, SIGNAL(triggered()), refreshAPIs, SLOT(refresh()));
 	
 	connect(refreshAPIs, SIGNAL(spotifyPlayingTrackFetched(Track)), this, SLOT(getTrack(Track)));
-	connect(refreshAPIs, SIGNAL(geniusLyricsFetched(Lyrics)), this, SLOT(getLyrics(Lyrics)));
+	//connect(refreshAPIs, SIGNAL(geniusLyricsFetched(Lyrics)), this, SLOT(getLyrics(Lyrics)));
+	connect(refreshAPIs, SIGNAL(geniusLyricsListFetched(QList<Lyrics>)), this, SLOT(getLyricsList(QList<Lyrics>)));
 	connect(refreshAPIs, SIGNAL(spotifyOpenBrowser(QUrl)), this, SLOT(requestOpenBrowser(QUrl)));
 	connect(refreshAPIs, SIGNAL(spotifyCloseBrowser()), this, SLOT(requestCloseBrowser()));
 	connect(refreshAPIs, SIGNAL(spotifyLinkingFailed()), this, SLOT(requestCloseBrowser()));
@@ -173,6 +175,23 @@ void MainWindow::getLyrics(Lyrics lyrics) {
 	ui->actionResumePause->setEnabled(true);
 	if (lyrics.getLyrics() != "" && currentLyrics != lyrics)
 		currentLyrics = lyrics;
+}
+
+void MainWindow::getLyricsList(QList<Lyrics> lyricsList) {
+	ui->mainToolBar->setEnabled(true);
+	ui->actionRefresh->setEnabled(true);
+	ui->actionResumePause->setEnabled(true);
+	if (!lyricsList.isEmpty()) {
+		currentLyricsList.clear();
+		currentLyricsList = lyricsList;
+		
+		cb_geniusResults->clear();
+		for (int i = 0, max = currentLyricsList.size(); i < max; i++)
+			cb_geniusResults->addItem(QString::number(i+1));
+		
+		// Automatically call `on_cb_geniusResults_currentIndexChanged()` slot
+		cb_geniusResults->setCurrentIndex(0);
+	}
 }
 
 void MainWindow::onTrackNameChanged(QString name) {
@@ -284,7 +303,10 @@ void MainWindow::onStyleChanged(int style) {
 }
 
 void MainWindow::on_cb_geniusResults_currentIndexChanged(int index) {
-	// TODO: Handle the event when an item from cb_geniusResults is chosen
+	if (0 <= index && index < currentLyricsList.size())
+		currentLyrics = currentLyricsList[index];
+	else
+		cb_geniusResults->clear();
 }
 
 void MainWindow::on_actionRefresh_triggered() {

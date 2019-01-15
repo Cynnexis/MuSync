@@ -43,6 +43,7 @@ protected:
 private slots:
 	void getTrack(Track track);
 	void getLyrics(Lyrics lyrics);
+	void getLyricsList(QList<Lyrics> lyricsList);
 	
 	void onTrackNameChanged(QString name);
 	void onTrackArtistsChanged(QArtistList artists);
@@ -111,6 +112,7 @@ private:
 	QThread* threadAPIs = nullptr;
 	Track currentTrack;
 	Lyrics currentLyrics;
+	QList<Lyrics> currentLyricsList;
 	
 	int refreshStatus = RESUMED;
 };
