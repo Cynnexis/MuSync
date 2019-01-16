@@ -11,7 +11,7 @@ AutoRefreshAPI::AutoRefreshAPI(QObject* parent) : QObject(parent) {
 	connect(api, SIGNAL(spotifyLinkingFailed()), this, SIGNAL(spotifyLinkingFailed()));
 	connect(api, SIGNAL(spotifyOpenBrowser(QUrl)), this, SIGNAL(spotifyOpenBrowser(QUrl)));
 	connect(api, SIGNAL(spotifyCloseBrowser()), this, SIGNAL(spotifyCloseBrowser()));
-	connect(api, SIGNAL(spotifyPlayingTrackFetched(Track)), this, SIGNAL(spotifyPlayingTrackFetched(Track)));
+	connect(api, SIGNAL(spotifyPlayingTrackFetched(SpotifyTrack)), this, SIGNAL(spotifyPlayingTrackFetched(SpotifyTrack)));
 	
 	connect(api, SIGNAL(geniusLinkedChanged(bool)), this, SIGNAL(geniusLinkedChanged(bool)));
 	connect(api, SIGNAL(geniusLinkingSucceeded()), this, SIGNAL(geniusLinkingSucceeded()));
@@ -48,7 +48,7 @@ void AutoRefreshAPI::refresh() {
 #endif
 		emit aboutToRefresh();
 		t_refresh->stop();
-		Track track = api->getPlayingTrack();
+		SpotifyTrack track = api->getPlayingTrack();
 		if (track != lastTrackFetched) {
 			lastTrackFetched = track;
 			api->getLyricsList(track);

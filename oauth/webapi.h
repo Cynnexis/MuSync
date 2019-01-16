@@ -19,7 +19,8 @@
 #include "lib/O2/o2spotify.h"
 #include "lib/O2/o2requestor.h"
 
-#include "models/track.h"
+#include "models/spotifytrack.h"
+#include "models/geniustrack.h"
 #include "models/lyrics.h"
 #include "threading/barrier.h"
 #include "oauth/oauthdialog.h"
@@ -37,15 +38,15 @@ public:
 	~WebAPI();
 	
 	void connectToSpotify();
-	Track getPlayingTrack();
+	SpotifyTrack getPlayingTrack();
 	
 	void connectToGenius();
-	Lyrics getLyrics(const Track& track);
+	Lyrics getLyrics(const SpotifyTrack& track);
 	Lyrics getLyrics();
-	QList<Lyrics> getLyricsList(const Track& track);
+	QList<Lyrics> getLyricsList(const SpotifyTrack& track);
 	QList<Lyrics> getLyricsList();
 	
-	QJsonArray getSearchList(const Track& track);
+	QJsonArray getSearchList(const SpotifyTrack& track);
 	
 	QString getHtmlLyrics(QString lyricsPath);
 	
@@ -57,7 +58,7 @@ signals:
 	void spotifyLinkingFailed();
 	void spotifyOpenBrowser(QUrl);
 	void spotifyCloseBrowser();
-	void spotifyPlayingTrackFetched(Track);
+	void spotifyPlayingTrackFetched(SpotifyTrack);
 	
 	void geniusLinkedChanged(bool);
 	void geniusLinkingSucceeded();

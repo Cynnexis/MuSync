@@ -30,7 +30,7 @@ class MainWindow : public QMainWindow
 	
 public:
 	explicit MainWindow(QWidget *parent = nullptr);
-	~MainWindow();
+	~MainWindow() override;
 	
 private:
 	void changeTitle(QString title = "");
@@ -41,7 +41,7 @@ protected:
 	void closeEvent(QCloseEvent* event) override;
 	
 private slots:
-	void getTrack(Track track);
+	void getTrack(SpotifyTrack track);
 	void getLyrics(Lyrics lyrics);
 	void getLyricsList(QList<Lyrics> lyricsList);
 	
@@ -110,7 +110,7 @@ private:
 	
 	AutoRefreshAPI* refreshAPIs = nullptr;
 	QThread* threadAPIs = nullptr;
-	Track currentTrack;
+	SpotifyTrack currentTrack;
 	Lyrics currentLyrics;
 	QList<Lyrics> currentLyricsList;
 	

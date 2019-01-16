@@ -8,7 +8,8 @@
 
 #include "oauth/webapi.h"
 #include "preferences.h"
-#include "models/track.h"
+#include "models/spotifytrack.h"
+#include "models/geniustrack.h"
 
 using namespace std;
 
@@ -40,7 +41,7 @@ signals:
 	void spotifyLinkingFailed();
 	void spotifyOpenBrowser(QUrl);
 	void spotifyCloseBrowser();
-	void spotifyPlayingTrackFetched(Track);
+	void spotifyPlayingTrackFetched(SpotifyTrack);
 	
 	void geniusLinkedChanged(bool);
 	void geniusLinkingSucceeded();
@@ -56,7 +57,7 @@ private:
 	
 	Preferences* pref;
 	
-	Track lastTrackFetched;
+	SpotifyTrack lastTrackFetched;
 };
 
 #endif // AUTOREFRESHAPI_H

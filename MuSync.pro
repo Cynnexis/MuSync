@@ -43,7 +43,9 @@ SOURCES += \
     threading/autorefreshapi.cpp \
     ui/dsettings.cpp \
     ui/overlaywidget.cpp \
-    ui/loadingoverlay.cpp
+    ui/loadingoverlay.cpp \
+    models/geniustrack.cpp \
+    models/spotifytrack.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -62,7 +64,9 @@ HEADERS += \
     threading/autorefreshapi.h \
     ui/dsettings.h \
     ui/overlaywidget.h \
-    ui/loadingoverlay.h
+    ui/loadingoverlay.h \
+    models/geniustrack.h \
+    models/spotifytrack.h
 
 FORMS += \
         mainwindow.ui \

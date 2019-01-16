@@ -37,7 +37,7 @@ void WebAPI::connectToSpotify() {
 #endif
 }
 
-Track WebAPI::getPlayingTrack() {
+SpotifyTrack WebAPI::getPlayingTrack() {
 	if (!o2_spotify->linked()) {
 		cout << "Not connected to the Spotify API." << endl;
 		throw "Not connected to the Spotify API.";
@@ -59,8 +59,8 @@ Track WebAPI::getPlayingTrack() {
 #endif
 	
 	if (bufferSpotifyPlayingTrackData == "") {
-		emit spotifyPlayingTrackFetched(Track());
-		return Track();
+		emit spotifyPlayingTrackFetched(SpotifyTrack());
+		return SpotifyTrack();
 	}
 	
 #ifdef QT_DEBUG
@@ -153,14 +153,14 @@ Track WebAPI::getPlayingTrack() {
 	if (external_urls.keys().contains("spotify"))
 		spotifyWebUrl = external_urls["spotify"].toString("");
 	
-	Track track = Track(name,
-						artists,
-						album,
-						thumbnailUrl,
-						trackNumber,
-						spotifyUri,
-						spotifyWebUrl,
-						false);
+	SpotifyTrack track = SpotifyTrack(name,
+									  artists,
+									  album,
+									  thumbnailUrl,
+									  trackNumber,
+									  spotifyUri,
+									  spotifyWebUrl,
+									  false);
 	
 #ifdef QT_DEBUG
 	cout << "Spotify> " << track.toString().toStdString() << endl;
@@ -200,7 +200,7 @@ void WebAPI::connectToGenius() {
 #endif
 }
 
-Lyrics WebAPI::getLyrics(const Track& track) {
+Lyrics WebAPI::getLyrics(const SpotifyTrack& track) {
 	Lyrics lyrics("No lyrics found");
 	
 	QJsonArray hits;
@@ -256,7 +256,7 @@ Lyrics WebAPI::getLyrics() {
 	return getLyrics(getPlayingTrack());
 }
 
-QList<Lyrics> WebAPI::getLyricsList(const Track& track) {
+QList<Lyrics> WebAPI::getLyricsList(const SpotifyTrack& track) {
 	QList<Lyrics> lyricsList;
 	
 	QJsonArray hits;
@@ -296,7 +296,7 @@ QList<Lyrics> WebAPI::getLyricsList() {
 	return getLyricsList(getPlayingTrack());
 }
 
-QJsonArray WebAPI::getSearchList(const Track& track) {
+QJsonArray WebAPI::getSearchList(const SpotifyTrack& track) {
 	Lyrics lyrics("No lyrics found");
 	
 	if (track.getName() == "" || track.getArtists().isEmpty())

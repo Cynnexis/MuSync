@@ -7,6 +7,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->setupUi(this);
 	
 	qRegisterMetaType<Track>("Track");
+	qRegisterMetaType<SpotifyTrack>("SpotifyTrack");
+	qRegisterMetaType<GeniusTrack>("GeniusTrack");
 	qRegisterMetaType<Album>("Album");
 	qRegisterMetaType<Artist>("Artist");
 	qRegisterMetaType<Lyrics>("Lyrics");
@@ -80,7 +82,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	
 	connect(ui->actionRefresh, SIGNAL(triggered()), refreshAPIs, SLOT(refresh()));
 	
-	connect(refreshAPIs, SIGNAL(spotifyPlayingTrackFetched(Track)), this, SLOT(getTrack(Track)));
+	connect(refreshAPIs, SIGNAL(spotifyPlayingTrackFetched(SpotifyTrack)), this, SLOT(getTrack(SpotifyTrack)));
 	//connect(refreshAPIs, SIGNAL(geniusLyricsFetched(Lyrics)), this, SLOT(getLyrics(Lyrics)));
 	connect(refreshAPIs, SIGNAL(geniusLyricsListFetched(QList<Lyrics>)), this, SLOT(getLyricsList(QList<Lyrics>)));
 	connect(refreshAPIs, SIGNAL(spotifyOpenBrowser(QUrl)), this, SLOT(requestOpenBrowser(QUrl)));
@@ -156,7 +158,7 @@ void MainWindow::closeEvent(QCloseEvent* event) {
 	}
 }
 
-void MainWindow::getTrack(Track track) {
+void MainWindow::getTrack(SpotifyTrack track) {
 	// Hide the loading screen & re-enable the menu bar
 	if (!loadingOverlay->isHidden()) {
 		loadingOverlay->hide();
