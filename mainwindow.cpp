@@ -7,10 +7,12 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->setupUi(this);
 	
 	qRegisterMetaType<Track>("Track");
+	qRegisterMetaType<SpotifyTrack>("SpotifyTrack");
+	qRegisterMetaType<GeniusTrack>("GeniusTrack");
 	qRegisterMetaType<Album>("Album");
 	qRegisterMetaType<Artist>("Artist");
-	qRegisterMetaType<Lyrics>("Lyrics");
 	qRegisterMetaType<QArtistList>("QArtistList");
+	qRegisterMetaType<QList<GeniusTrack>>("QList<GeniusTrack>");
 	
 	changeTitle();
 	
@@ -18,6 +20,15 @@ MainWindow::MainWindow(QWidget *parent) :
 	
 	connect(pref, SIGNAL(startupBehaviourChanged(int)), this, SLOT(onStartupBehaviourChanged(int)));
 	connect(pref, SIGNAL(styleChanged(int)), this, SLOT(onStyleChanged(int)));
+	
+	cb_geniusResults = new QComboBox(this);
+	cb_geniusResults->setEditable(false);
+	cb_geniusResults->setMinimumWidth(150);
+	
+	connect(cb_geniusResults, SIGNAL(currentIndexChanged(int)), this, SLOT(on_cb_geniusResults_currentIndexChanged(int)));
+	
+	ui->mainToolBar->addSeparator();
+	ui->mainToolBar->addWidget(cb_geniusResults);
 	
 	// Disable the menu until the loading screen is gone
 	ui->menuBar->setEnabled(false);
@@ -71,8 +82,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	
 	connect(ui->actionRefresh, SIGNAL(triggered()), refreshAPIs, SLOT(refresh()));
 	
-	connect(refreshAPIs, SIGNAL(spotifyPlayingTrackFetched(Track)), this, SLOT(getTrack(Track)));
-	connect(refreshAPIs, SIGNAL(geniusLyricsFetched(Lyrics)), this, SLOT(getLyrics(Lyrics)));
+	connect(refreshAPIs, SIGNAL(spotifyPlayingTrackFetched(SpotifyTrack)), this, SLOT(getTrack(SpotifyTrack)));
+	connect(refreshAPIs, SIGNAL(geniusLyricsListFetched(QList<GeniusTrack>)), this, SLOT(getLyricsList(QList<GeniusTrack>)));
 	connect(refreshAPIs, SIGNAL(spotifyOpenBrowser(QUrl)), this, SLOT(requestOpenBrowser(QUrl)));
 	connect(refreshAPIs, SIGNAL(spotifyCloseBrowser()), this, SLOT(requestCloseBrowser()));
 	connect(refreshAPIs, SIGNAL(spotifyLinkingFailed()), this, SLOT(requestCloseBrowser()));
@@ -146,7 +157,7 @@ void MainWindow::closeEvent(QCloseEvent* event) {
 	}
 }
 
-void MainWindow::getTrack(Track track) {
+void MainWindow::getTrack(SpotifyTrack track) {
 	// Hide the loading screen & re-enable the menu bar
 	if (!loadingOverlay->isHidden()) {
 		loadingOverlay->hide();
@@ -159,12 +170,21 @@ void MainWindow::getTrack(Track track) {
 	}
 }
 
-void MainWindow::getLyrics(Lyrics lyrics) {
+void MainWindow::getLyricsList(QList<GeniusTrack> lyricsList) {
 	ui->mainToolBar->setEnabled(true);
 	ui->actionRefresh->setEnabled(true);
 	ui->actionResumePause->setEnabled(true);
-	if (lyrics.getLyrics() != "" && currentLyrics != lyrics)
-		currentLyrics = lyrics;
+	if (!lyricsList.isEmpty()) {
+		currentLyricsList.clear();
+		currentLyricsList = lyricsList;
+		
+		cb_geniusResults->clear();
+		for (int i = 0, max = currentLyricsList.size(); i < max; i++)
+			cb_geniusResults->addItem(currentLyricsList[i].getName());
+		
+		// Automatically call `on_cb_geniusResults_currentIndexChanged()` slot
+		cb_geniusResults->setCurrentIndex(0);
+	}
 }
 
 void MainWindow::onTrackNameChanged(QString name) {
@@ -275,6 +295,13 @@ void MainWindow::onStyleChanged(int style) {
 	// Style is changed (from Preferences)
 }
 
+void MainWindow::on_cb_geniusResults_currentIndexChanged(int index) {
+	if (0 <= index && index < currentLyricsList.size())
+		currentLyrics = currentLyricsList[index];
+	else
+		cb_geniusResults->clear();
+}
+
 void MainWindow::on_actionRefresh_triggered() {
     // Refresh function already connecting. UI can be updated from here
 }
@@ -324,8 +351,8 @@ void MainWindow::on_actionOpenAlbumOnSpotifyWeb_triggered() {
 }
 
 void MainWindow::on_actionOpenLyricsOnGenius_triggered() {
-	cout << "MainWindow> Genius URL: " << currentLyrics.getGeniusUrl().toStdString() << endl;
-	QDesktopServices::openUrl(QUrl(currentLyrics.getGeniusUrl()));
+	cout << "MainWindow> Genius URL: " << currentLyrics.getLyricsUrl().toStdString() << endl;
+	QDesktopServices::openUrl(QUrl(currentLyrics.getLyricsUrl()));
 }
 
 void MainWindow::on_actionAboutMuSync_triggered() {

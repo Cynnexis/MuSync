@@ -11,14 +11,15 @@ AutoRefreshAPI::AutoRefreshAPI(QObject* parent) : QObject(parent) {
 	connect(api, SIGNAL(spotifyLinkingFailed()), this, SIGNAL(spotifyLinkingFailed()));
 	connect(api, SIGNAL(spotifyOpenBrowser(QUrl)), this, SIGNAL(spotifyOpenBrowser(QUrl)));
 	connect(api, SIGNAL(spotifyCloseBrowser()), this, SIGNAL(spotifyCloseBrowser()));
-	connect(api, SIGNAL(spotifyPlayingTrackFetched(Track)), this, SIGNAL(spotifyPlayingTrackFetched(Track)));
+	connect(api, SIGNAL(spotifyPlayingTrackFetched(SpotifyTrack)), this, SIGNAL(spotifyPlayingTrackFetched(SpotifyTrack)));
 	
 	connect(api, SIGNAL(geniusLinkedChanged(bool)), this, SIGNAL(geniusLinkedChanged(bool)));
 	connect(api, SIGNAL(geniusLinkingSucceeded()), this, SIGNAL(geniusLinkingSucceeded()));
 	connect(api, SIGNAL(geniusLinkingFailed()), this, SIGNAL(geniusLinkingFailed()));
 	connect(api, SIGNAL(geniusOpenBrowser(QUrl)), this, SIGNAL(geniusOpenBrowser(QUrl)));
 	connect(api, SIGNAL(geniusCloseBrowser()), this, SIGNAL(geniusCloseBrowser()));
-	connect(api, SIGNAL(geniusLyricsFetched(Lyrics)), this, SIGNAL(geniusLyricsFetched(Lyrics)));
+	//connect(api, SIGNAL(geniusLyricsFetched(GeniusTrack)), this, SIGNAL(geniusLyricsFetched(GeniusTrack)));
+	connect(api, SIGNAL(geniusLyricsListFetched(QList<GeniusTrack>)), this, SIGNAL(geniusLyricsListFetched(QList<GeniusTrack>)));
 }
 
 void AutoRefreshAPI::refresh() {
@@ -47,10 +48,10 @@ void AutoRefreshAPI::refresh() {
 #endif
 		emit aboutToRefresh();
 		t_refresh->stop();
-		Track track = api->getPlayingTrack();
+		SpotifyTrack track = api->getPlayingTrack();
 		if (track != lastTrackFetched) {
 			lastTrackFetched = track;
-			api->getLyrics();
+			api->getLyricsList(track);
 		}
 		t_refresh->start(pref->getRefreshTimeout());
 		emit refreshFinished();

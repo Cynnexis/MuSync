@@ -37,7 +37,7 @@ void WebAPI::connectToSpotify() {
 #endif
 }
 
-Track WebAPI::getPlayingTrack() {
+SpotifyTrack WebAPI::getPlayingTrack() {
 	if (!o2_spotify->linked()) {
 		cout << "Not connected to the Spotify API." << endl;
 		throw "Not connected to the Spotify API.";
@@ -59,8 +59,8 @@ Track WebAPI::getPlayingTrack() {
 #endif
 	
 	if (bufferSpotifyPlayingTrackData == "") {
-		emit spotifyPlayingTrackFetched(Track());
-		return Track();
+		emit spotifyPlayingTrackFetched(SpotifyTrack());
+		return SpotifyTrack();
 	}
 	
 #ifdef QT_DEBUG
@@ -153,14 +153,14 @@ Track WebAPI::getPlayingTrack() {
 	if (external_urls.keys().contains("spotify"))
 		spotifyWebUrl = external_urls["spotify"].toString("");
 	
-	Track track = Track(name,
-						artists,
-						album,
-						thumbnailUrl,
-						trackNumber,
-						spotifyUri,
-						spotifyWebUrl,
-						false);
+	SpotifyTrack track = SpotifyTrack(name,
+									  artists,
+									  album,
+									  thumbnailUrl,
+									  trackNumber,
+									  spotifyUri,
+									  spotifyWebUrl,
+									  false);
 	
 #ifdef QT_DEBUG
 	cout << "Spotify> " << track.toString().toStdString() << endl;
@@ -200,11 +200,61 @@ void WebAPI::connectToGenius() {
 #endif
 }
 
-Lyrics WebAPI::getLyrics(const Track& track) {
-	Lyrics lyrics("No lyrics found");
+QList<GeniusTrack> WebAPI::getLyricsList(const SpotifyTrack& track) {
+	QList<GeniusTrack> lyricsList;
 	
+	QJsonArray hits;
+	try {
+		hits = getSearchList(track);
+	} catch (std::exception) {
+		emit geniusLyricsListFetched(lyricsList);
+		return lyricsList;
+	}
+	
+	for (QJsonValue h : hits) {
+		if (h.toObject()["type"].toString("") == "song") {
+			GeniusTrack lyrics;
+			QJsonObject hit = h.toObject();
+			QString name = hit["result"].toObject()["title"].toString("");
+			QString apiPath = hit["result"].toObject()["api_path"].toString("");
+			QString thumbnailUrl = hit["result"].toObject()["header_image_url"].toString("");
+			
+			QString primaryArtist = hit["result"].toObject()["primary_artist"].toObject()["name"].toString("");
+			// TODO: What about the other artists?
+			QArtistList artists;
+			artists.append(primaryArtist);
+			
+			QString hitPath = hit["result"].toObject()["path"].toString("");
+			
+			if (!hitPath.startsWith("/"))
+				hitPath = "/" + hitPath;
+			
+			if (hitPath != "") {
+				QString url = "https://genius.com" + hitPath;
+				
+				// Fetch the HTML page containing the lyrics			
+				QString html = getHtmlLyrics(url);
+				lyrics.setLyrics(parseLyrics(html));
+				lyrics.setLyricsUrl(url);
+				lyrics.setName(name);
+				lyrics.setThumbnail(thumbnailUrl, false);
+				lyrics.setArtists(artists);
+				if (lyrics.getLyrics() != "")
+					lyricsList.append(lyrics);
+			}
+		}
+	}
+	
+	emit geniusLyricsListFetched(lyricsList);
+	return lyricsList;
+}
+QList<GeniusTrack> WebAPI::getLyricsList() {
+	return getLyricsList(getPlayingTrack());
+}
+
+QJsonArray WebAPI::getSearchList(const SpotifyTrack& track) {
 	if (track.getName() == "" || track.getArtists().isEmpty())
-		return lyrics;
+		throw "Invalid track";
 	
 #ifdef QT_DEBUG
 	cout << "Genius> Fetching lyrics for " << track.getName().toStdString() << endl;
@@ -235,100 +285,64 @@ Lyrics WebAPI::getLyrics(const Track& track) {
 #endif
 	
 	if (bufferGeniusSongInfo == "") {
-		emit geniusLyricsFetched(lyrics);
-		return lyrics;
+		throw "Invalid response";
 	}
 	
 	QJsonDocument doc = QJsonDocument::fromJson(bufferGeniusSongInfo.toUtf8());
 	QJsonObject json = doc.object();
 	
-	QJsonArray hits = json["response"].toObject()["hits"].toArray();
-	
-	bool found = false;
-	QJsonObject firstResult;
-	
-	for (QJsonValue h : hits) {
-		if (h.toObject()["type"].toString("") == "song") {
-			found = true;
-			firstResult = h.toObject();
-			break;
-		}
-	}
-	
-	// If a valid result have been found
-	if (found) {
-		// Get the URI to the lyrics
-		QString firstResultPath = firstResult["result"].toObject()["path"].toString("");
-		
-		if (!firstResultPath.startsWith("/"))
-			firstResultPath = "/" + firstResultPath;
-		
-		if (firstResultPath != "") {
-			QString url = "https://genius.com" + firstResultPath;
-			lyrics.setGeniusUrl(url);
-			
-			// Fetch the HTML page containing the lyrics
-			QNetworkRequest request = QNetworkRequest(QUrl(url));
-			QNetworkAccessManager* mgr = new QNetworkAccessManager();
-			QNetworkReply* response = mgr->get(request);
-			QEventLoop event;
-			connect(response, SIGNAL(finished()), &event, SLOT(quit()));	
-			event.exec();
-			
-			QString html = response->readAll();
-			QStringList list = html.split("<div class=\"lyrics\">");
-			
-			// If no lyrics detected, return no lyrics
-			if (list.length() == 0) {
-				emit geniusLyricsFetched(lyrics);
-				return lyrics;
-			}
-			
-			html = list[1];
-			list = html.split("<!--sse-->");
-			
-			// If no lyrics detected, return no lyrics
-			if (list.length() == 0) {
-				emit geniusLyricsFetched(lyrics);
-				return lyrics;
-			}
-			
-			html = list[1];
-			list = html.split("<!--/sse-->");
-			
-			if (list.length() == 0) {
-				emit geniusLyricsFetched(lyrics);
-				return lyrics;
-			}
-			
-			html = list[0];
-			
-			html = html.replace(QRegularExpression("<\\/?[^>]+>"), "");
-			html = html.replace(QRegularExpression("(\\n|\\r\\n|\\n\\r|\\s)*\\0?$"), "");
-			html = html.replace(QRegularExpression("^(\\n|\\r\\n|\\n\\r|\\s)*"), "");
-			//QTextDocument text;
-			//text.setHtml(html);
-			//html = text.toPlainText();
-			lyrics.setLyrics(html);
-			
-			emit geniusLyricsFetched(lyrics);
-			return lyrics;
-		}
-		// If no path found, return no lyrics
-		else {
-			emit geniusLyricsFetched(lyrics);
-			return lyrics;
-		}
-	}
-	// If no result found, return no lyrics
-	else {
-		emit geniusLyricsFetched(lyrics);
-		return lyrics;
-	}
+	return json["response"].toObject()["hits"].toArray();
 }
 
-Lyrics WebAPI::getLyrics() {
-	return getLyrics(getPlayingTrack());
+QString WebAPI::getHtmlLyrics(QString url) {
+	if (url != "") {
+		// Fetch the HTML page containing the lyrics
+		QNetworkRequest request = QNetworkRequest(QUrl(url));
+		QNetworkAccessManager* mgr = new QNetworkAccessManager();
+		QNetworkReply* response = mgr->get(request);
+		QEventLoop event;
+		connect(response, SIGNAL(finished()), &event, SLOT(quit()));	
+		event.exec();
+		
+		return response->readAll();
+	}
+	else
+		return "";
+}
+
+QString WebAPI::parseLyrics(QString html) {
+	QString lyrics = GeniusTrack().getLyrics();
+	
+	QStringList list = html.split("<div class=\"lyrics\">");
+	
+	// If no lyrics detected, return no lyrics
+	if (list.length() == 0)
+		return lyrics;
+	
+	html = list[1];
+	list = html.split("<!--sse-->");
+	
+	// If no lyrics detected, return no lyrics
+	if (list.length() == 0)
+		return lyrics;
+	
+	html = list[1];
+	list = html.split("<!--/sse-->");
+	
+	if (list.length() == 0)
+		return lyrics;
+	
+	html = list[0];
+	
+	html = html.replace(QRegularExpression("<\\/?[^>]+>"), "");
+	html = html.replace(QRegularExpression("(\\n|\\r\\n|\\n\\r|\\s)*\\0?$"), "");
+	html = html.replace(QRegularExpression("^(\\n|\\r\\n|\\n\\r|\\s)*"), "");
+	//QTextDocument text;
+	//text.setHtml(html);
+	//html = text.toPlainText();
+	lyrics = html;
+	
+	return lyrics;
 }
 
 /* PRIVATE SLOTS */
