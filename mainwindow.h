@@ -42,8 +42,7 @@ protected:
 	
 private slots:
 	void getTrack(SpotifyTrack track);
-	void getLyrics(Lyrics lyrics);
-	void getLyricsList(QList<Lyrics> lyricsList);
+	void getLyricsList(QList<GeniusTrack> lyricsList);
 	
 	void onTrackNameChanged(QString name);
 	void onTrackArtistsChanged(QArtistList artists);
@@ -111,8 +110,8 @@ private:
 	AutoRefreshAPI* refreshAPIs = nullptr;
 	QThread* threadAPIs = nullptr;
 	SpotifyTrack currentTrack;
-	Lyrics currentLyrics;
-	QList<Lyrics> currentLyricsList;
+	GeniusTrack currentLyrics;
+	QList<GeniusTrack> currentLyricsList;
 	
 	int refreshStatus = RESUMED;
 };

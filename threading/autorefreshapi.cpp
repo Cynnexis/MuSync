@@ -18,8 +18,8 @@ AutoRefreshAPI::AutoRefreshAPI(QObject* parent) : QObject(parent) {
 	connect(api, SIGNAL(geniusLinkingFailed()), this, SIGNAL(geniusLinkingFailed()));
 	connect(api, SIGNAL(geniusOpenBrowser(QUrl)), this, SIGNAL(geniusOpenBrowser(QUrl)));
 	connect(api, SIGNAL(geniusCloseBrowser()), this, SIGNAL(geniusCloseBrowser()));
-	connect(api, SIGNAL(geniusLyricsFetched(Lyrics)), this, SIGNAL(geniusLyricsFetched(Lyrics)));
-	connect(api, SIGNAL(geniusLyricsListFetched(QList<Lyrics>)), this, SIGNAL(geniusLyricsListFetched(QList<Lyrics>)));
+	//connect(api, SIGNAL(geniusLyricsFetched(GeniusTrack)), this, SIGNAL(geniusLyricsFetched(GeniusTrack)));
+	connect(api, SIGNAL(geniusLyricsListFetched(QList<GeniusTrack>)), this, SIGNAL(geniusLyricsListFetched(QList<GeniusTrack>)));
 }
 
 void AutoRefreshAPI::refresh() {

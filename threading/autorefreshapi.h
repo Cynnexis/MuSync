@@ -48,8 +48,8 @@ signals:
 	void geniusLinkingFailed();
 	void geniusOpenBrowser(QUrl);
 	void geniusCloseBrowser();
-	void geniusLyricsFetched(Lyrics);
-	void geniusLyricsListFetched(QList<Lyrics>);
+	//void geniusLyricsFetched(GeniusTrack);
+	void geniusLyricsListFetched(QList<GeniusTrack>);
 	
 private:
 	WebAPI* api = nullptr;

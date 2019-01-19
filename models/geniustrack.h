@@ -15,7 +15,7 @@ public:
 	GeniusTrack(const QString& name = "",
 				const QArtistList& artists = {},
 				const QPixmap thumbnail = QPixmap(),
-				const QString& lyrics = "",
+				const QString& lyrics = tr("No lyrics found"),
 				const QString& lyricsUrl = "",
 				const QString& apiPath = "",
 				QObject *parent = nullptr);
@@ -41,9 +41,6 @@ public:
 	
 	QString getLyrics() const;
 	void setLyrics(const QString& value);
-	
-	QString getGeniusUrl() const;
-	void setGeniusUrl(const QString& value);
 	
 	QString getLyricsUrl() const;
 	void setLyricsUrl(const QString& value);

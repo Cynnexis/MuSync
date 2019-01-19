@@ -11,9 +11,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	qRegisterMetaType<GeniusTrack>("GeniusTrack");
 	qRegisterMetaType<Album>("Album");
 	qRegisterMetaType<Artist>("Artist");
-	qRegisterMetaType<Lyrics>("Lyrics");
 	qRegisterMetaType<QArtistList>("QArtistList");
-	qRegisterMetaType<QList<Lyrics>>("QList<Lyrics>");
+	qRegisterMetaType<QList<GeniusTrack>>("QList<GeniusTrack>");
 	
 	changeTitle();
 	
@@ -24,6 +23,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	
 	cb_geniusResults = new QComboBox(this);
 	cb_geniusResults->setEditable(false);
+	cb_geniusResults->setMinimumWidth(150);
 	
 	connect(cb_geniusResults, SIGNAL(currentIndexChanged(int)), this, SLOT(on_cb_geniusResults_currentIndexChanged(int)));
 	
@@ -83,8 +83,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->actionRefresh, SIGNAL(triggered()), refreshAPIs, SLOT(refresh()));
 	
 	connect(refreshAPIs, SIGNAL(spotifyPlayingTrackFetched(SpotifyTrack)), this, SLOT(getTrack(SpotifyTrack)));
-	//connect(refreshAPIs, SIGNAL(geniusLyricsFetched(Lyrics)), this, SLOT(getLyrics(Lyrics)));
-	connect(refreshAPIs, SIGNAL(geniusLyricsListFetched(QList<Lyrics>)), this, SLOT(getLyricsList(QList<Lyrics>)));
+	connect(refreshAPIs, SIGNAL(geniusLyricsListFetched(QList<GeniusTrack>)), this, SLOT(getLyricsList(QList<GeniusTrack>)));
 	connect(refreshAPIs, SIGNAL(spotifyOpenBrowser(QUrl)), this, SLOT(requestOpenBrowser(QUrl)));
 	connect(refreshAPIs, SIGNAL(spotifyCloseBrowser()), this, SLOT(requestCloseBrowser()));
 	connect(refreshAPIs, SIGNAL(spotifyLinkingFailed()), this, SLOT(requestCloseBrowser()));
@@ -171,15 +170,7 @@ void MainWindow::getTrack(SpotifyTrack track) {
 	}
 }
 
-void MainWindow::getLyrics(Lyrics lyrics) {
-	ui->mainToolBar->setEnabled(true);
-	ui->actionRefresh->setEnabled(true);
-	ui->actionResumePause->setEnabled(true);
-	if (lyrics.getLyrics() != "" && currentLyrics != lyrics)
-		currentLyrics = lyrics;
-}
-
-void MainWindow::getLyricsList(QList<Lyrics> lyricsList) {
+void MainWindow::getLyricsList(QList<GeniusTrack> lyricsList) {
 	ui->mainToolBar->setEnabled(true);
 	ui->actionRefresh->setEnabled(true);
 	ui->actionResumePause->setEnabled(true);
@@ -189,7 +180,7 @@ void MainWindow::getLyricsList(QList<Lyrics> lyricsList) {
 		
 		cb_geniusResults->clear();
 		for (int i = 0, max = currentLyricsList.size(); i < max; i++)
-			cb_geniusResults->addItem(QString::number(i+1));
+			cb_geniusResults->addItem(currentLyricsList[i].getName());
 		
 		// Automatically call `on_cb_geniusResults_currentIndexChanged()` slot
 		cb_geniusResults->setCurrentIndex(0);
@@ -360,8 +351,8 @@ void MainWindow::on_actionOpenAlbumOnSpotifyWeb_triggered() {
 }
 
 void MainWindow::on_actionOpenLyricsOnGenius_triggered() {
-	cout << "MainWindow> Genius URL: " << currentLyrics.getGeniusUrl().toStdString() << endl;
-	QDesktopServices::openUrl(QUrl(currentLyrics.getGeniusUrl()));
+	cout << "MainWindow> Genius URL: " << currentLyrics.getLyricsUrl().toStdString() << endl;
+	QDesktopServices::openUrl(QUrl(currentLyrics.getLyricsUrl()));
 }
 
 void MainWindow::on_actionAboutMuSync_triggered() {

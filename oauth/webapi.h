@@ -21,7 +21,6 @@
 
 #include "models/spotifytrack.h"
 #include "models/geniustrack.h"
-#include "models/lyrics.h"
 #include "threading/barrier.h"
 #include "oauth/oauthdialog.h"
 #include "r.h"
@@ -41,16 +40,14 @@ public:
 	SpotifyTrack getPlayingTrack();
 	
 	void connectToGenius();
-	Lyrics getLyrics(const SpotifyTrack& track);
-	Lyrics getLyrics();
-	QList<Lyrics> getLyricsList(const SpotifyTrack& track);
-	QList<Lyrics> getLyricsList();
+	QList<GeniusTrack> getLyricsList(const SpotifyTrack& track);
+	QList<GeniusTrack> getLyricsList();
 	
 	QJsonArray getSearchList(const SpotifyTrack& track);
 	
 	QString getHtmlLyrics(QString lyricsPath);
 	
-	Lyrics parseLyrics(QString html);
+	QString parseLyrics(QString html);
 	
 signals:
 	void spotifyLinkedChanged(bool);
@@ -65,8 +62,7 @@ signals:
 	void geniusLinkingFailed();
 	void geniusOpenBrowser(QUrl);
 	void geniusCloseBrowser();
-	void geniusLyricsFetched(Lyrics);
-	void geniusLyricsListFetched(QList<Lyrics>);
+	void geniusLyricsListFetched(QList<GeniusTrack>);
 	
 private slots:
 	void onSpotifyLinkedChanged();
