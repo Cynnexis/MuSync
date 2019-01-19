@@ -38,12 +38,13 @@ SOURCES += \
     models/artist.cpp \
     models/qartistlist.cpp \
     models/album.cpp \
-    models/lyrics.cpp \
     r.cpp \
     threading/autorefreshapi.cpp \
     ui/dsettings.cpp \
     ui/overlaywidget.cpp \
-    ui/loadingoverlay.cpp
+    ui/loadingoverlay.cpp \
+    models/geniustrack.cpp \
+    models/spotifytrack.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -57,12 +58,13 @@ HEADERS += \
     models/artist.h \
     models/qartistlist.h \
     models/album.h \
-    models/lyrics.h \
     r.h \
     threading/autorefreshapi.h \
     ui/dsettings.h \
     ui/overlaywidget.h \
-    ui/loadingoverlay.h
+    ui/loadingoverlay.h \
+    models/geniustrack.h \
+    models/spotifytrack.h
 
 FORMS += \
         mainwindow.ui \
