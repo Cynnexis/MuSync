@@ -15,12 +15,14 @@ public:
 	GeniusTrack(const QString& name = "",
 				const QArtistList& artists = {},
 				const QPixmap thumbnail = QPixmap(),
+				const QString& lyrics = "",
 				const QString& lyricsUrl = "",
 				const QString& apiPath = "",
 				QObject *parent = nullptr);
 	GeniusTrack(const QString& name,
 				const QArtistList& artists,
 				const QString thumbnailUrl,
+				const QString& lyrics,
 				const QString& lyricsUrl,
 				const QString& apiPath,
 				const bool& download = true,
@@ -29,10 +31,20 @@ public:
 	~GeniusTrack();
 	
 private:
-	void init(const QString& lyricsUrl,
+	void init(const QString& lyrics,
+			  const QString& lyricsUrl,
 			  const QString& apiPath);
 	
 public:
+	
+	/* GETTERS & SETTERS */
+	
+	QString getLyrics() const;
+	void setLyrics(const QString& value);
+	
+	QString getGeniusUrl() const;
+	void setGeniusUrl(const QString& value);
+	
 	QString getLyricsUrl() const;
 	void setLyricsUrl(const QString& value);
 	
@@ -44,10 +56,12 @@ public:
 	GeniusTrack& operator=(GeniusTrack that);
 	
 signals:
+	void lyricsChanged(QString);
 	void lyricsUrlChanged(QString);
 	void apiPathChanged(QString);
 	
 private:
+	QString lyrics;
 	QString lyricsUrl;
 	QString apiPath;
 };
