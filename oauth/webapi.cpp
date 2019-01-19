@@ -281,7 +281,7 @@ QJsonArray WebAPI::getSearchList(const SpotifyTrack& track) {
 #endif
 	
 #ifdef QT_DEBUG
-	cout << "Genius> " << bufferGeniusSongInfo.toStdString() << endl;
+	//cout << "Genius> " << bufferGeniusSongInfo.toStdString() << endl;
 #endif
 	
 	if (bufferGeniusSongInfo == "") {

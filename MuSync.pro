@@ -38,7 +38,6 @@ SOURCES += \
     models/artist.cpp \
     models/qartistlist.cpp \
     models/album.cpp \
-    models/lyrics.cpp \
     r.cpp \
     threading/autorefreshapi.cpp \
     ui/dsettings.cpp \
@@ -59,7 +58,6 @@ HEADERS += \
     models/artist.h \
     models/qartistlist.h \
     models/album.h \
-    models/lyrics.h \
     r.h \
     threading/autorefreshapi.h \
     ui/dsettings.h \
