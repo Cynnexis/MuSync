@@ -21,6 +21,10 @@ TEMPLATE = app
 # deprecated API in order to know how to port your code away from it.
 DEFINES += QT_DEPRECATED_WARNINGS
 
+# The following define will call Visual Leak Detector. If you don't want
+# it, please comment the line below.
+#DEFINES += DETECT_MEMORY_LEAK
+
 # You can also make your code fail to compile if you use deprecated APIs.
 # In order to do so, uncomment the following line.
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
@@ -98,3 +102,8 @@ win32: LIBS += -L"$$PWD/lib/SSL/" -lopenssl -llibeay32 -llibssl -llibcrypto
 # Add Qt-Frameless-Window-DarkStyle project
 
 include($$PWD/lib/DarkStyle/frameless_window_dark.pri)
+
+# Add Visual Leak Detector for Visual C++
+INCLUDEPATH += "D:/Developer/Visual Leak Detector/include"
+DEPENDPATH += "D:/Developer/Visual Leak Detector/include"
+LIBS += -L"D:/Developer/Visual Leak Detector/lib/Win64"
