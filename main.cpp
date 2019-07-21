@@ -2,6 +2,11 @@
 #include <QApplication>
 #include <QCoreApplication>
 
+// If DEBUG and leak memory actived, import Visual Leak Detector for a full scan of the program.
+#if defined(QT_DEBUG) && defined(DETECT_MEMORY_LEAK)
+#include <vld.h>
+#endif
+
 #include "DarkStyle.h"
 #include "framelesswindow/framelesswindow.h"
 
